@@ -11,23 +11,30 @@ import (
 )
 
 type productResponse struct {
-	Id               string `json:"id"`
-	Name             string `json:"name"`
-	DisplayImage     string `json:"displayImage"`
-	Thumbnail        string `json:"thumbnail"`
-	Price            string `json:"price"`
-	Description      string `json:"description"`
-	ShortDescription string `json:"shortDescription"`
-	Quantity         int    `json:"quantity"`
+	Id               string  `json:"id"`
+	Name             string  `json:"name"`
+	DisplayImage     *string `json:"displayImage"`
+	Thumbnail        *string `json:"thumbnail"`
+	Price            *string `json:"price"`
+	Description      *string `json:"description"`
+	ShortDescription *string `json:"shortDescription"`
+	Quantity         int     `json:"quantity"`
 }
 
 func NewProductResponse(product *common.Product) productResponse {
+	var price *string
+
+	if product.Price == nil {
+		str := product.Price.StringFixed(2)
+		price = &str
+	}
+
 	return productResponse{
 		Description:      product.Description,
 		Name:             product.Name,
 		DisplayImage:     product.DisplayImage,
 		Id:               product.Id,
-		Price:            product.Price.StringFixed(2),
+		Price:            price,
 		Quantity:         product.Quantity,
 		ShortDescription: product.ShortDescription,
 		Thumbnail:        product.Thumbnail,
@@ -48,7 +55,7 @@ func ProductMiddleware(next http.Handler) http.Handler {
 			render.Render(w, r, ErrUnknown(err))
 		}
 
-		product, err := productRepo.ProductFromRepo(id)
+		product, err := productRepo.ProductFromRepo(r.Context(), id)
 
 		if err != nil {
 			render.Render(w, r, ErrUnknown(err))

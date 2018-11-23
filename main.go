@@ -21,7 +21,7 @@ func main() {
 		panic(fmt.Sprintf("Unable to load configuration: %s", err.Error()))
 	}
 
-	err = repository.ConfigureProductRepository(config.GetRepoType())
+	err = repository.ConfigureProductRepository(config)
 
 	if err != nil {
 		panic(fmt.Sprintf("Unable to configure repository: %s", err.Error()))

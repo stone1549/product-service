@@ -1,17 +1,18 @@
 package repository
 
 import (
+	"context"
 	"github.com/stone1549/product-service/common"
 )
 
 type productList struct {
-	Products []*common.Product
+	Products []common.Product
 	Cursor   string
 }
 
 type ProductRepository interface {
-	ProductsFromRepo(first int, cursor string) (productList, error)
-	ProductFromRepo(id string) (common.Product, error)
+	ProductsFromRepo(ctx context.Context, first int, cursor string) (productList, error)
+	ProductFromRepo(ctx context.Context, id string) (common.Product, error)
 }
 
 var repo ProductRepository
@@ -24,14 +25,14 @@ func GetProductRepository() (ProductRepository, error) {
 	return repo, nil
 }
 
-func ConfigureProductRepository(repoType common.ProductRepositoryType) error {
+func ConfigureProductRepository(config common.Configuration) error {
 	var err error
 	if repo == nil {
-		switch repoType {
+		switch config.GetRepoType() {
 		case common.InMemory:
 			repo = &InMemoryProductRepository{make([]common.Product, 0)}
 		case common.PostgreSQL:
-			err = ErrRepository("PostgreSQL repository type unimplemented")
+			repo, err = makePostgresqlProductRespository(config)
 		default:
 			err = ErrRepository("repository type unimplemented")
 		}

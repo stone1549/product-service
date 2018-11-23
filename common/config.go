@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -13,6 +14,7 @@ const (
 	RepoTypeKey       string = "PRODUCT_SERVICE_REPO_TYPE"
 	TimeoutSecondsKey string = "PRODUCT_SERVICE_TIMEOUT"
 	PortKey           string = "PRODUCT_SERVICE_PORT"
+	PgUrlKey          string = "PRODUCT_SERVICE_PG_URL"
 )
 
 type LifeCycle int
@@ -31,10 +33,14 @@ const (
 )
 
 type Configuration interface {
+	// Required config
 	GetLifeCycle() LifeCycle
 	GetRepoType() ProductRepositoryType
 	GetTimeout() time.Duration
 	GetPort() int
+
+	// PostgreSQL config
+	GetPgUrl() string
 }
 
 type configuration struct {
@@ -42,6 +48,7 @@ type configuration struct {
 	repoType  ProductRepositoryType
 	timeout   time.Duration
 	port      int
+	pgUrl     string
 }
 
 func (conf *configuration) GetLifeCycle() LifeCycle {
@@ -60,21 +67,25 @@ func (conf *configuration) GetPort() int {
 	return conf.port
 }
 
+func (conf *configuration) GetPgUrl() string {
+	return conf.pgUrl
+}
+
 func GetConfiguration() (Configuration, error) {
 	var err error
+	config := configuration{}
 
 	lcStr := os.Getenv(LifeCycleKey)
-	var lifeCycle LifeCycle
 
 	switch lcStr {
 	case "DEV":
-		lifeCycle = Dev
+		config.lifeCycle = Dev
 	case "PRE_PROD":
-		lifeCycle = PreProd
+		config.lifeCycle = PreProd
 	case "PROD":
-		lifeCycle = Prod
+		config.lifeCycle = Prod
 	default:
-		lifeCycle = Dev
+		config.lifeCycle = Dev
 	}
 
 	if err != nil {
@@ -82,16 +93,15 @@ func GetConfiguration() (Configuration, error) {
 	}
 
 	repoTypeStr := os.Getenv(RepoTypeKey)
-	var repoType ProductRepositoryType
 
 	switch repoTypeStr {
 	case "IN_MEMORY":
-		repoType = InMemory
+		config.repoType = InMemory
 	case "POSTGRESQL":
-		repoType = PostgreSQL
+		config.repoType = PostgreSQL
 	default:
-		if lifeCycle == Dev {
-			repoType = InMemory
+		if config.lifeCycle == Dev {
+			config.repoType = InMemory
 		} else {
 			err = errors.New(fmt.Sprintf("No repo type configured, set %s environment variable", RepoTypeKey))
 		}
@@ -105,24 +115,42 @@ func GetConfiguration() (Configuration, error) {
 
 	timeoutInt, err := strconv.Atoi(timeoutStr)
 
-	if lifeCycle == Dev && err != nil {
+	if config.lifeCycle == Dev && err != nil {
 		timeoutInt = 60
 	} else if err != nil {
 		err = errors.New(fmt.Sprintf("No timeout configured, set %s environment variable", TimeoutSecondsKey))
 		return nil, err
 	}
 
-	timeout := time.Duration(timeoutInt) * time.Second
+	config.timeout = time.Duration(timeoutInt) * time.Second
 
 	portStr := os.Getenv(PortKey)
 	port, err := strconv.Atoi(portStr)
 
-	if lifeCycle == Dev && err != nil {
-		port = 3333
+	if config.lifeCycle == Dev && err != nil {
+		config.port = 3333
 	} else if err != nil {
 		err = errors.New(fmt.Sprintf("No port configured, set %s environment variable", PortKey))
 		return nil, err
 	}
 
-	return &configuration{lifeCycle, repoType, timeout, port}, nil
+	config.port = port
+
+	if config.repoType == PostgreSQL {
+		setPostgresqlConfig(&config)
+	}
+
+	return &config, nil
+}
+
+func setPostgresqlConfig(config *configuration) error {
+	var err error
+
+	config.pgUrl = os.Getenv(PgUrlKey)
+
+	if strings.TrimSpace(config.pgUrl) == "" {
+		err = errors.New(fmt.Sprintf("No PostgreSQL url configured, set %s environment variable", PgUrlKey))
+	}
+
+	return err
 }

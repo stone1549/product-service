@@ -16,6 +16,8 @@ Controls log levels and configuration defaults.
 ##### PRODUCT_SERVICE_REPO_TYPE
 
 * IN_MEMORY
+* POSTGRESQL
+    * PRODUCT_SERVICE_PG_URL - Full connection string for PG
 
 ##### PRODUCT_SERVICE_TIMEOUT
 
@@ -24,6 +26,7 @@ Incoming request timeout value in seconds.
 ##### PRODUCT_SERVICE_PORT
 
 Port to run service on.
+
 
 ## Run
 
