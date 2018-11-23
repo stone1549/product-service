@@ -9,13 +9,6 @@ type productList struct {
 	Cursor   string
 }
 
-type ProductRepositoryType int
-
-const (
-	InMemory   ProductRepositoryType = 0
-	PostgreSQL ProductRepositoryType = iota
-)
-
 type ProductRepository interface {
 	ProductsFromRepo(first int, cursor string) (productList, error)
 	ProductFromRepo(id string) (common.Product, error)
@@ -31,13 +24,13 @@ func GetProductRepository() (ProductRepository, error) {
 	return repo, nil
 }
 
-func ConfigureProductRepository(repoType ProductRepositoryType) error {
+func ConfigureProductRepository(repoType common.ProductRepositoryType) error {
 	var err error
 	if repo == nil {
 		switch repoType {
-		case InMemory:
+		case common.InMemory:
 			repo = &InMemoryProductRepository{make([]common.Product, 0)}
-		case PostgreSQL:
+		case common.PostgreSQL:
 			err = ErrRepository("PostgreSQL repository type unimplemented")
 		default:
 			err = ErrRepository("repository type unimplemented")
