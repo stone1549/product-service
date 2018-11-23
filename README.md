@@ -1,2 +1,2 @@
 # product-service
-Simplified example service for managing products, written in Go.
+Example REST service for managing products, written in Go using Chi.
