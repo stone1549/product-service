@@ -13,13 +13,17 @@ Controls log levels and configuration defaults.
 * PRE_PROD
 * PROD
  
-##### PRODUCT_REPO_TYPE
+##### PRODUCT_SERVICE_REPO_TYPE
 
 * IN_MEMORY
 
 ##### PRODUCT_SERVICE_TIMEOUT
 
-Incoming request timeout value in seconds
+Incoming request timeout value in seconds.
+
+##### PRODUCT_SERVICE_PORT
+
+Port to run service on.
 
 ## Run
 

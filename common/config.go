@@ -10,8 +10,9 @@ import (
 
 const (
 	LifeCycleKey      string = "PRODUCT_SERVICE_ENVIRONMENT"
-	RepoTypeKey       string = "PRODUCT_REPO_TYPE"
+	RepoTypeKey       string = "PRODUCT_SERVICE_REPO_TYPE"
 	TimeoutSecondsKey string = "PRODUCT_SERVICE_TIMEOUT"
+	PortKey           string = "PRODUCT_SERVICE_PORT"
 )
 
 type LifeCycle int
@@ -33,12 +34,14 @@ type Configuration interface {
 	GetLifeCycle() LifeCycle
 	GetRepoType() ProductRepositoryType
 	GetTimeout() time.Duration
+	GetPort() int
 }
 
 type configuration struct {
 	lifeCycle LifeCycle
 	repoType  ProductRepositoryType
 	timeout   time.Duration
+	port      int
 }
 
 func (conf *configuration) GetLifeCycle() LifeCycle {
@@ -51,6 +54,10 @@ func (conf *configuration) GetRepoType() ProductRepositoryType {
 
 func (conf *configuration) GetTimeout() time.Duration {
 	return conf.timeout
+}
+
+func (conf *configuration) GetPort() int {
+	return conf.port
 }
 
 func GetConfiguration() (Configuration, error) {
@@ -106,5 +113,16 @@ func GetConfiguration() (Configuration, error) {
 	}
 
 	timeout := time.Duration(timeoutInt) * time.Second
-	return &configuration{lifeCycle, repoType, timeout}, nil
+
+	portStr := os.Getenv(PortKey)
+	port, err := strconv.Atoi(portStr)
+
+	if lifeCycle == Dev && err != nil {
+		port = 3333
+	} else if err != nil {
+		err = errors.New(fmt.Sprintf("No port configured, set %s environment variable", PortKey))
+		return nil, err
+	}
+
+	return &configuration{lifeCycle, repoType, timeout, port}, nil
 }
