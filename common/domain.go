@@ -12,5 +12,5 @@ type Product struct {
 	Price            *decimal.Decimal `json:"price"`
 	Description      *string          `json:"description"`
 	ShortDescription *string          `json:"shortDescription"`
-	Quantity         int              `json:"quantity"`
+	QtyInStock       int              `json:"qtyInStock"`
 }

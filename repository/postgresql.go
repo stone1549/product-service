@@ -24,7 +24,7 @@ func scanProductFromRow(row *sql.Row) (*common.Product, error) {
 
 	var priceStr string
 	err := row.Scan(&result.Id, &result.Name, &result.Description, &result.ShortDescription, &result.DisplayImage,
-		&result.Thumbnail, &priceStr, &result.Quantity)
+		&result.Thumbnail, &priceStr, &result.QtyInStock)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -49,7 +49,7 @@ func scanProductFromRows(rows *sql.Rows) (*common.Product, error) {
 
 	var priceStr string
 	err := rows.Scan(&result.Id, &result.Name, &result.Description, &result.ShortDescription, &result.DisplayImage,
-		&result.Thumbnail, &priceStr, &result.Quantity)
+		&result.Thumbnail, &priceStr, &result.QtyInStock)
 
 	if priceStr != "" {
 		price, err := decimal.NewFromString(priceStr)

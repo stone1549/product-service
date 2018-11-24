@@ -40,7 +40,7 @@ func newProductResponse(product common.Product) productResponse {
 		DisplayImage:     product.DisplayImage,
 		Id:               product.Id,
 		Price:            price,
-		Quantity:         product.Quantity,
+		Quantity:         product.QtyInStock,
 		ShortDescription: product.ShortDescription,
 		Thumbnail:        product.Thumbnail,
 	}
