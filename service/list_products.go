@@ -44,13 +44,13 @@ func ListProductsMiddleware(next http.Handler) http.Handler {
 		productRepo, err := repository.GetProductRepository()
 
 		if err != nil {
-			render.Render(w, r, ErrUnknown(err))
+			render.Render(w, r, ErrRepository(err))
 		}
 
 		productsList, err := productRepo.ProductsFromRepo(r.Context(), first, cursor)
 
 		if err != nil {
-			render.Render(w, r, ErrUnknown(err))
+			render.Render(w, r, ErrRepository(err))
 			return
 		} else if len(productsList.Products) == 0 {
 			render.Render(w, r, ErrNotFound)
