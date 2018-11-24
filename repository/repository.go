@@ -12,14 +12,14 @@ type ProductList struct {
 
 type ProductRepository interface {
 	ProductsFromRepo(ctx context.Context, first int, cursor string) (ProductList, error)
-	ProductFromRepo(ctx context.Context, id string) (common.Product, error)
+	ProductFromRepo(ctx context.Context, id string) (*common.Product, error)
 }
 
 var repo ProductRepository
 
 func GetProductRepository() (ProductRepository, error) {
 	if repo == nil {
-		return nil, ErrRepository("ConfigureProductRepository must be called first")
+		return nil, newErrRepository("ConfigureProductRepository must be called first")
 	}
 
 	return repo, nil
@@ -34,10 +34,10 @@ func ConfigureProductRepository(config common.Configuration) error {
 		case common.PostgreSQL:
 			repo, err = makePostgresqlProductRespository(config)
 		default:
-			err = ErrRepository("repository type unimplemented")
+			err = newErrRepository("repository type unimplemented")
 		}
 	} else {
-		err = ErrRepository("ConfigureProductRepository called twice")
+		err = newErrRepository("ConfigureProductRepository called twice")
 	}
 
 	return err

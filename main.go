@@ -42,10 +42,10 @@ func main() {
 
 	r.Route("/products", func(r chi.Router) {
 		r.With(service.ListProductsMiddleware).Get("/", service.ListProducts)
-		//r.Route("/{productId}", func(r chi.Router) {
-		//	r.Use(product.ProductMiddleware) // Load the *Article on the request context
-		//	r.Get("/", GetProduct)           // GET /articles/123
-		//})
+		r.Route("/{productId}", func(r chi.Router) {
+			r.Use(service.ProductMiddleware) // Load the *Article on the request context
+			r.Get("/", service.GetProduct)   // GET /articles/123
+		})
 	})
 
 	http.ListenAndServe(":3333", r)

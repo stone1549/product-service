@@ -10,6 +10,6 @@ func (er errRepository) Error() string {
 	return er.err.Error()
 }
 
-func ErrRepository(msg string) error {
+func newErrRepository(msg string) error {
 	return errRepository{errors.New(msg)}
 }

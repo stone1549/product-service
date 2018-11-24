@@ -26,6 +26,11 @@ func scanProductFromRow(row *sql.Row) (*common.Product, error) {
 	err := row.Scan(&result.Id, &result.Name, &result.Description, &result.ShortDescription, &result.DisplayImage,
 		&result.Thumbnail, &priceStr, &result.Quantity)
 
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
 	if priceStr != "" {
 		price, err := decimal.NewFromString(priceStr)
 
@@ -68,7 +73,7 @@ func (ppr postgresqlProductRepository) ProductsFromRepo(ctx context.Context, fir
 		offset, err = strconv.Atoi(cursor)
 
 		if err != nil {
-			return result, ErrRepository("Invalid cursor")
+			return result, newErrRepository("Invalid cursor")
 		}
 	}
 
@@ -96,14 +101,14 @@ func (ppr postgresqlProductRepository) ProductsFromRepo(ctx context.Context, fir
 	return result, nil
 }
 
-func (ppr postgresqlProductRepository) ProductFromRepo(ctx context.Context, id string) (common.Product, error) {
-	result, err := scanProductFromRow(ppr.db.QueryRowContext(ctx, getProductQuery, id))
+func (ppr postgresqlProductRepository) ProductFromRepo(ctx context.Context, id string) (*common.Product, error) {
+	row := ppr.db.QueryRowContext(ctx, getProductQuery, id)
 
-	if err != nil {
-		return common.Product{}, err
+	if row == nil {
+		return nil, nil
 	}
 
-	return *result, err
+	return scanProductFromRow(row)
 }
 
 func makePostgresqlProductRespository(config common.Configuration) (ProductRepository, error) {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -21,7 +22,11 @@ type productResponse struct {
 	Quantity         int     `json:"quantity"`
 }
 
-func NewProductResponse(product *common.Product) productResponse {
+func (plr productResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
+func newProductResponse(product common.Product) productResponse {
 	var price *string
 
 	if product.Price == nil {
@@ -52,16 +57,35 @@ func ProductMiddleware(next http.Handler) http.Handler {
 		productRepo, err := repository.GetProductRepository()
 
 		if err != nil {
-			render.Render(w, r, ErrUnknown(err))
+			render.Render(w, r, ErrRepository(err))
+			return
 		}
 
 		product, err := productRepo.ProductFromRepo(r.Context(), id)
 
 		if err != nil {
-			render.Render(w, r, ErrUnknown(err))
+			render.Render(w, r, ErrRepository(err))
+		} else if product == nil {
+			render.Render(w, r, ErrNotFound)
+			return
 		}
 
-		ctx := context.WithValue(r.Context(), "product", product)
+		ctx := context.WithValue(r.Context(), "product", *product)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func GetProduct(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	product, ok := ctx.Value("product").(common.Product)
+
+	if !ok {
+		render.Render(w, r, ErrUnknown(errors.New("unable to retrieve product at this time")))
+		return
+	}
+
+	if err := render.Render(w, r, newProductResponse(product)); err != nil {
+		render.Render(w, r, ErrUnknown(err))
+		return
+	}
 }

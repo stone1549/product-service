@@ -24,7 +24,7 @@ func (plr productListResponse) Render(w http.ResponseWriter, r *http.Request) er
 func newProductListResponse(products []common.Product, cursor string) productListResponse {
 	results := make([]productResponse, 0)
 	for _, product := range products {
-		productResponse := NewProductResponse(&product)
+		productResponse := newProductResponse(product)
 		results = append(results, productResponse)
 	}
 
@@ -45,6 +45,7 @@ func ListProductsMiddleware(next http.Handler) http.Handler {
 
 		if err != nil {
 			render.Render(w, r, ErrRepository(err))
+			return
 		}
 
 		productsList, err := productRepo.ProductsFromRepo(r.Context(), first, cursor)

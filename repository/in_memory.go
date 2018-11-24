@@ -19,16 +19,17 @@ func (impr *InMemoryProductRepository) ProductsFromRepo(_ context.Context, first
 	return ProductList{products, ""}, nil
 }
 
-func findProductById(products []common.Product, id string) (common.Product, error) {
+func findProductById(products []common.Product, id string) (*common.Product, error) {
+
 	for _, product := range products {
 		if id == product.Id {
-			return product, nil
+			return &product, nil
 		}
 	}
 
-	return common.Product{}, nil
+	return nil, nil
 }
 
-func (impr *InMemoryProductRepository) ProductFromRepo(_ context.Context, id string) (common.Product, error) {
+func (impr *InMemoryProductRepository) ProductFromRepo(_ context.Context, id string) (*common.Product, error) {
 	return findProductById(impr.products, id)
 }
