@@ -5,11 +5,11 @@ import (
 	"github.com/stone1549/product-service/common"
 )
 
-type InMemoryProductRepository struct {
+type inMemoryProductRepository struct {
 	products []common.Product
 }
 
-func (impr *InMemoryProductRepository) ProductsFromRepo(_ context.Context, first int, cursor string) (ProductList, error) {
+func (impr *inMemoryProductRepository) ProductsFromRepo(_ context.Context, first int, cursor string) (ProductList, error) {
 	products := make([]common.Product, 0)
 
 	for _, product := range impr.products {
@@ -30,6 +30,6 @@ func findProductById(products []common.Product, id string) (*common.Product, err
 	return nil, nil
 }
 
-func (impr *InMemoryProductRepository) ProductFromRepo(_ context.Context, id string) (*common.Product, error) {
+func (impr *inMemoryProductRepository) ProductFromRepo(_ context.Context, id string) (*common.Product, error) {
 	return findProductById(impr.products, id)
 }

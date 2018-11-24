@@ -30,7 +30,7 @@ func ConfigureProductRepository(config common.Configuration) error {
 	if repo == nil {
 		switch config.GetRepoType() {
 		case common.InMemory:
-			repo = &InMemoryProductRepository{make([]common.Product, 0)}
+			repo = &inMemoryProductRepository{make([]common.Product, 0)}
 		case common.PostgreSQL:
 			repo, err = makePostgresqlProductRespository(config)
 		default:
