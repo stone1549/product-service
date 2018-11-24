@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	_ "github.com/lib/pq"
-	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 	"github.com/stone1549/product-service/common"
 	"strconv"
@@ -60,8 +59,8 @@ func scanProductFromRows(rows *sql.Rows) (*common.Product, error) {
 	return &result, err
 }
 
-func (ppr postgresqlProductRepository) ProductsFromRepo(ctx context.Context, first int, cursor string) (productList, error) {
-	var result productList
+func (ppr postgresqlProductRepository) ProductsFromRepo(ctx context.Context, first int, cursor string) (ProductList, error) {
+	var result ProductList
 	var offset int
 	var err error
 
@@ -69,7 +68,7 @@ func (ppr postgresqlProductRepository) ProductsFromRepo(ctx context.Context, fir
 		offset, err = strconv.Atoi(cursor)
 
 		if err != nil {
-			errors.New("Invalid cursor")
+			return result, ErrRepository("Invalid cursor")
 		}
 	}
 

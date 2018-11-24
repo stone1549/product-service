@@ -5,13 +5,13 @@ import (
 	"github.com/stone1549/product-service/common"
 )
 
-type productList struct {
+type ProductList struct {
 	Products []common.Product
 	Cursor   string
 }
 
 type ProductRepository interface {
-	ProductsFromRepo(ctx context.Context, first int, cursor string) (productList, error)
+	ProductsFromRepo(ctx context.Context, first int, cursor string) (ProductList, error)
 	ProductFromRepo(ctx context.Context, id string) (common.Product, error)
 }
 

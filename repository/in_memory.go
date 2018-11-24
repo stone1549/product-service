@@ -9,14 +9,14 @@ type InMemoryProductRepository struct {
 	products []common.Product
 }
 
-func (impr *InMemoryProductRepository) ProductsFromRepo(_ context.Context, first int, cursor string) (productList, error) {
+func (impr *InMemoryProductRepository) ProductsFromRepo(_ context.Context, first int, cursor string) (ProductList, error) {
 	products := make([]common.Product, 0)
 
 	for _, product := range impr.products {
 		productCopy := product
 		products = append(products, productCopy)
 	}
-	return productList{products, ""}, nil
+	return ProductList{products, ""}, nil
 }
 
 func findProductById(products []common.Product, id string) (common.Product, error) {
