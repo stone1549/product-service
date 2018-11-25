@@ -197,7 +197,7 @@ func makePostgresqlProductRespository(config common.Configuration) (ProductRepos
 	case common.SmallDataset:
 		err = loadInitPostgresqlData(db, config.GetInitDataSet())
 	default:
-		err = newErrRepository("Unsupported dataset %s for repo type PostgreSQL")
+		err = newErrRepository("Unsupported dataset %s for repo type PostgreSqlRepo")
 	}
 
 	if err != nil {

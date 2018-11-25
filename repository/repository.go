@@ -32,7 +32,7 @@ func ConfigureProductRepository(config common.Configuration) error {
 		switch config.GetRepoType() {
 		case common.InMemoryRepo:
 			repo, err = makeInMemoryRepository(config)
-		case common.PostgreSQL:
+		case common.PostgreSqlRepo:
 			repo, err = makePostgresqlProductRespository(config)
 		default:
 			err = newErrRepository("repository type unimplemented")

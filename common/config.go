@@ -35,16 +35,27 @@ func (lc LifeCycle) String() string {
 	case ProdLifeCycle:
 		return "PROD"
 	default:
-		return "DEV"
+		return ""
 	}
 }
 
 type ProductRepositoryType int
 
 const (
-	InMemoryRepo ProductRepositoryType = 0
-	PostgreSQL   ProductRepositoryType = iota
+	InMemoryRepo   ProductRepositoryType = 0
+	PostgreSqlRepo ProductRepositoryType = iota
 )
+
+func (prt ProductRepositoryType) String() string {
+	switch prt {
+	case PostgreSqlRepo:
+		return "POSTGRESQL"
+	case InMemoryRepo:
+		return "IN_MEMORY"
+	default:
+		return ""
+	}
+}
 
 type InitDataset int
 
@@ -74,7 +85,7 @@ type Configuration interface {
 	// Optional config
 	GetInitDataSet() InitDataset
 
-	// PostgreSQL config
+	// PostgreSqlRepo config
 	GetPgUrl() string
 }
 
@@ -135,10 +146,10 @@ func GetConfiguration() (Configuration, error) {
 	repoTypeStr := os.Getenv(repoTypeKey)
 
 	switch repoTypeStr {
-	case "IN_MEMORY":
+	case InMemoryRepo.String():
 		config.repoType = InMemoryRepo
-	case "POSTGRESQL":
-		config.repoType = PostgreSQL
+	case PostgreSqlRepo.String():
+		config.repoType = PostgreSqlRepo
 	default:
 		if config.lifeCycle == DevLifeCycle {
 			config.repoType = InMemoryRepo
@@ -176,7 +187,7 @@ func GetConfiguration() (Configuration, error) {
 
 	config.port = port
 
-	if config.repoType == PostgreSQL {
+	if config.repoType == PostgreSqlRepo {
 		setPostgresqlConfig(&config)
 	}
 
@@ -207,7 +218,7 @@ func setPostgresqlConfig(config *configuration) error {
 	config.pgUrl = os.Getenv(pgUrlKey)
 
 	if strings.TrimSpace(config.pgUrl) == "" {
-		err = errors.New(fmt.Sprintf("No PostgreSQL url configured, set %s environment variable", pgUrlKey))
+		err = errors.New(fmt.Sprintf("No PostgreSqlRepo url configured, set %s environment variable", pgUrlKey))
 	}
 
 	return err
