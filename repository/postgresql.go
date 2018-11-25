@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	listProductsQuery = "SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock FROM product LIMIT $1 OFFSET $2"
-	getProductQuery   = "SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock FROM product WHERE id=$1"
+	listProductsQuery  = "SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock FROM product LIMIT $1 OFFSET $2"
+	getProductQuery    = "SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock FROM product WHERE id=$1"
+	insertProductQuery = "INSERT INTO product (id, name, description, short_description, display_image, thumbnail, price, qty_in_stock) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
 )
 
 type postgresqlProductRepository struct {
@@ -111,8 +112,45 @@ func (ppr postgresqlProductRepository) ProductFromRepo(ctx context.Context, id s
 	return scanProductFromRow(row)
 }
 
+func loadInitPostgresqlData(db *sql.DB, dataset common.InitDataset) error {
+	products, err := loadInitInMemoryDataset(dataset)
+
+	if err != nil {
+		return err
+	}
+
+	txn, err := db.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	for _, product := range products {
+		_, err = txn.Exec(insertProductQuery, product.Id, product.Name, product.Description, product.ShortDescription,
+			product.DisplayImage, product.Thumbnail, product.Price.StringFixed(6), product.QtyInStock)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return txn.Commit()
+}
+
 func makePostgresqlProductRespository(config common.Configuration) (ProductRepository, error) {
 	db, err := sql.Open("postgres", config.GetPgUrl())
+
+	if err != nil {
+		return nil, err
+	}
+
+	switch config.GetInitDataSet() {
+	case common.NoDataset:
+	case common.SmallDataset:
+		err = loadInitPostgresqlData(db, config.GetInitDataSet())
+	default:
+		err = newErrRepository("Unsupported dataset %s for repo type PostgreSQL")
+	}
 
 	if err != nil {
 		return nil, err

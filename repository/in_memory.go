@@ -2,7 +2,9 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/stone1549/product-service/common"
+	"io/ioutil"
 )
 
 type inMemoryProductRepository struct {
@@ -32,4 +34,46 @@ func findProductById(products []common.Product, id string) (*common.Product, err
 
 func (impr *inMemoryProductRepository) ProductFromRepo(_ context.Context, id string) (*common.Product, error) {
 	return findProductById(impr.products, id)
+}
+
+func makeInMemoryRepository(config common.Configuration) (ProductRepository, error) {
+	var products []common.Product
+	var err error
+
+	switch config.GetInitDataSet() {
+	case common.NoDataset:
+		products = make([]common.Product, 0)
+	case common.SmallDataset:
+		products, err = loadInitInMemoryDataset(config.GetInitDataSet())
+	default:
+		err = newErrRepository("Unsupported dataset %s for repo type PostgreSQL")
+	}
+
+	return &inMemoryProductRepository{products}, err
+}
+
+func loadInitInMemoryDataset(dataset common.InitDataset) ([]common.Product, error) {
+	var err error
+	products := make([]common.Product, 0)
+
+	var filename string
+	switch dataset {
+	case common.SmallDataset:
+		filename = "small_set.json"
+	default:
+		err = newErrRepository("Unsupported dataset %s for repo type PostgreSQL")
+	}
+
+	if err != nil {
+		return products, err
+	}
+
+	jsonBytes, err := ioutil.ReadFile("data/" + filename)
+	if err != nil {
+		return products, err
+	}
+
+	err = json.Unmarshal(jsonBytes, &products)
+
+	return products, err
 }

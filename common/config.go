@@ -15,6 +15,7 @@ const (
 	TimeoutSecondsKey string = "PRODUCT_SERVICE_TIMEOUT"
 	PortKey           string = "PRODUCT_SERVICE_PORT"
 	PgUrlKey          string = "PRODUCT_SERVICE_PG_URL"
+	PgInitDatasetKey  string = "PRODUCT_SERVICE_INIT_DATASET"
 )
 
 type LifeCycle int
@@ -32,6 +33,24 @@ const (
 	PostgreSQL ProductRepositoryType = iota
 )
 
+type InitDataset int
+
+const (
+	NoDataset    InitDataset = 0
+	SmallDataset InitDataset = iota
+)
+
+func (id InitDataset) String() string {
+	switch id {
+	case SmallDataset:
+		return "SMALL"
+	case NoDataset:
+		return "NONE"
+	default:
+		return ""
+	}
+}
+
 type Configuration interface {
 	// Required config
 	GetLifeCycle() LifeCycle
@@ -39,16 +58,20 @@ type Configuration interface {
 	GetTimeout() time.Duration
 	GetPort() int
 
+	// Optional config
+	GetInitDataSet() InitDataset
+
 	// PostgreSQL config
 	GetPgUrl() string
 }
 
 type configuration struct {
-	lifeCycle LifeCycle
-	repoType  ProductRepositoryType
-	timeout   time.Duration
-	port      int
-	pgUrl     string
+	lifeCycle   LifeCycle
+	repoType    ProductRepositoryType
+	timeout     time.Duration
+	port        int
+	pgUrl       string
+	initDataset InitDataset
 }
 
 func (conf *configuration) GetLifeCycle() LifeCycle {
@@ -69,6 +92,10 @@ func (conf *configuration) GetPort() int {
 
 func (conf *configuration) GetPgUrl() string {
 	return conf.pgUrl
+}
+
+func (conf *configuration) GetInitDataSet() InitDataset {
+	return conf.initDataset
 }
 
 func GetConfiguration() (Configuration, error) {
@@ -138,6 +165,24 @@ func GetConfiguration() (Configuration, error) {
 
 	if config.repoType == PostgreSQL {
 		setPostgresqlConfig(&config)
+	}
+
+	initDatasetStr := os.Getenv(PgInitDatasetKey)
+	switch initDatasetStr {
+	case NoDataset.String():
+		config.initDataset = NoDataset
+	case SmallDataset.String():
+		config.initDataset = SmallDataset
+	default:
+		if initDatasetStr == "" {
+			config.initDataset = NoDataset
+		} else {
+			err = errors.New(fmt.Sprintf("Invalid dataset, set %s environment variable properly or omit it", PgInitDatasetKey))
+		}
+	}
+
+	if err != nil {
+		return nil, err
 	}
 
 	return &config, nil
