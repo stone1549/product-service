@@ -10,27 +10,27 @@ import (
 )
 
 const (
-	LifeCycleKey      string = "PRODUCT_SERVICE_ENVIRONMENT"
-	RepoTypeKey       string = "PRODUCT_SERVICE_REPO_TYPE"
-	TimeoutSecondsKey string = "PRODUCT_SERVICE_TIMEOUT"
-	PortKey           string = "PRODUCT_SERVICE_PORT"
-	PgUrlKey          string = "PRODUCT_SERVICE_PG_URL"
-	PgInitDatasetKey  string = "PRODUCT_SERVICE_INIT_DATASET"
+	lifeCycleKey      string = "PRODUCT_SERVICE_ENVIRONMENT"
+	repoTypeKey       string = "PRODUCT_SERVICE_REPO_TYPE"
+	timeoutSecondsKey string = "PRODUCT_SERVICE_TIMEOUT"
+	portKey           string = "PRODUCT_SERVICE_PORT"
+	pgUrlKey          string = "PRODUCT_SERVICE_PG_URL"
+	pgInitDatasetKey  string = "PRODUCT_SERVICE_INIT_DATASET"
 )
 
 type LifeCycle int
 
 const (
-	Dev     LifeCycle = 0
-	PreProd LifeCycle = iota
-	Prod    LifeCycle = iota
+	DevLifeCycle     LifeCycle = 0
+	PreProdLifeCycle LifeCycle = iota
+	ProdLifeCycle    LifeCycle = iota
 )
 
 type ProductRepositoryType int
 
 const (
-	InMemory   ProductRepositoryType = 0
-	PostgreSQL ProductRepositoryType = iota
+	InMemoryRepo ProductRepositoryType = 0
+	PostgreSQL   ProductRepositoryType = iota
 )
 
 type InitDataset int
@@ -102,35 +102,35 @@ func GetConfiguration() (Configuration, error) {
 	var err error
 	config := configuration{}
 
-	lcStr := os.Getenv(LifeCycleKey)
+	lcStr := os.Getenv(lifeCycleKey)
 
 	switch lcStr {
 	case "DEV":
-		config.lifeCycle = Dev
+		config.lifeCycle = DevLifeCycle
 	case "PRE_PROD":
-		config.lifeCycle = PreProd
+		config.lifeCycle = PreProdLifeCycle
 	case "PROD":
-		config.lifeCycle = Prod
+		config.lifeCycle = ProdLifeCycle
 	default:
-		config.lifeCycle = Dev
+		config.lifeCycle = DevLifeCycle
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	repoTypeStr := os.Getenv(RepoTypeKey)
+	repoTypeStr := os.Getenv(repoTypeKey)
 
 	switch repoTypeStr {
 	case "IN_MEMORY":
-		config.repoType = InMemory
+		config.repoType = InMemoryRepo
 	case "POSTGRESQL":
 		config.repoType = PostgreSQL
 	default:
-		if config.lifeCycle == Dev {
-			config.repoType = InMemory
+		if config.lifeCycle == DevLifeCycle {
+			config.repoType = InMemoryRepo
 		} else {
-			err = errors.New(fmt.Sprintf("No repo type configured, set %s environment variable", RepoTypeKey))
+			err = errors.New(fmt.Sprintf("No repo type configured, set %s environment variable", repoTypeKey))
 		}
 	}
 
@@ -138,26 +138,26 @@ func GetConfiguration() (Configuration, error) {
 		return nil, err
 	}
 
-	timeoutStr := os.Getenv(TimeoutSecondsKey)
+	timeoutStr := os.Getenv(timeoutSecondsKey)
 
 	timeoutInt, err := strconv.Atoi(timeoutStr)
 
-	if config.lifeCycle == Dev && err != nil {
+	if config.lifeCycle == DevLifeCycle && err != nil {
 		timeoutInt = 60
 	} else if err != nil {
-		err = errors.New(fmt.Sprintf("No timeout configured, set %s environment variable", TimeoutSecondsKey))
+		err = errors.New(fmt.Sprintf("No timeout configured, set %s environment variable", timeoutSecondsKey))
 		return nil, err
 	}
 
 	config.timeout = time.Duration(timeoutInt) * time.Second
 
-	portStr := os.Getenv(PortKey)
+	portStr := os.Getenv(portKey)
 	port, err := strconv.Atoi(portStr)
 
-	if config.lifeCycle == Dev && err != nil {
+	if config.lifeCycle == DevLifeCycle && err != nil {
 		config.port = 3333
 	} else if err != nil {
-		err = errors.New(fmt.Sprintf("No port configured, set %s environment variable", PortKey))
+		err = errors.New(fmt.Sprintf("No port configured, set %s environment variable", portKey))
 		return nil, err
 	}
 
@@ -167,7 +167,7 @@ func GetConfiguration() (Configuration, error) {
 		setPostgresqlConfig(&config)
 	}
 
-	initDatasetStr := os.Getenv(PgInitDatasetKey)
+	initDatasetStr := os.Getenv(pgInitDatasetKey)
 	switch initDatasetStr {
 	case NoDataset.String():
 		config.initDataset = NoDataset
@@ -177,7 +177,7 @@ func GetConfiguration() (Configuration, error) {
 		if initDatasetStr == "" {
 			config.initDataset = NoDataset
 		} else {
-			err = errors.New(fmt.Sprintf("Invalid dataset, set %s environment variable properly or omit it", PgInitDatasetKey))
+			err = errors.New(fmt.Sprintf("Invalid dataset, set %s environment variable properly or omit it", pgInitDatasetKey))
 		}
 	}
 
@@ -191,10 +191,10 @@ func GetConfiguration() (Configuration, error) {
 func setPostgresqlConfig(config *configuration) error {
 	var err error
 
-	config.pgUrl = os.Getenv(PgUrlKey)
+	config.pgUrl = os.Getenv(pgUrlKey)
 
 	if strings.TrimSpace(config.pgUrl) == "" {
-		err = errors.New(fmt.Sprintf("No PostgreSQL url configured, set %s environment variable", PgUrlKey))
+		err = errors.New(fmt.Sprintf("No PostgreSQL url configured, set %s environment variable", pgUrlKey))
 	}
 
 	return err
