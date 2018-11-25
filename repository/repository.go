@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"github.com/stone1549/product-service/common"
 )
 
@@ -23,7 +24,12 @@ func NewProductRepository(config common.Configuration) (ProductRepository, error
 	case common.InMemoryRepo:
 		repo, err = makeInMemoryRepository(config)
 	case common.PostgreSqlRepo:
-		repo, err = makePostgresqlProductRespository(config)
+		db, err := sql.Open("postgres", config.GetPgUrl())
+
+		if err != nil {
+			return nil, err
+		}
+		repo, err = MakePostgresqlProductRespository(config, db)
 	default:
 		err = newErrRepository("repository type unimplemented")
 	}

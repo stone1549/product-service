@@ -185,13 +185,8 @@ func loadInitPostgresqlData(db *sql.DB, dataset common.InitDataset) error {
 	return txn.Commit()
 }
 
-func makePostgresqlProductRespository(config common.Configuration) (ProductRepository, error) {
-	db, err := sql.Open("postgres", config.GetPgUrl())
-
-	if err != nil {
-		return nil, err
-	}
-
+func MakePostgresqlProductRespository(config common.Configuration, db *sql.DB) (ProductRepository, error) {
+	var err error
 	switch config.GetInitDataSet() {
 	case common.NoDataset:
 	case common.SmallDataset:
