@@ -41,6 +41,7 @@ func main() {
 	r.Use(middleware.Timeout(config.GetTimeout()))
 
 	r.Route("/products", func(r chi.Router) {
+		r.With(service.SearchProductsMiddleware).Get("/search", service.SearchProducts)
 		r.With(service.ListProductsMiddleware).Get("/", service.ListProducts)
 		r.Route("/{productId}", func(r chi.Router) {
 			r.Use(service.ProductMiddleware) // Load the *Article on the request context

@@ -7,7 +7,7 @@ CREATE TABLE product (
   description text,
   short_description text,
   qty_in_stock int NOT NULL DEFAULT 0,
-  textsearchable_index_col tsvector NOT NULL
+  textsearchable_index_col tsvector
 );
 
 CREATE INDEX product_name_idx ON product (name);

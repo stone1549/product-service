@@ -36,6 +36,11 @@ func (impr *inMemoryProductRepository) ProductFromRepo(_ context.Context, id str
 	return findProductById(impr.products, id)
 }
 
+func (impr *inMemoryProductRepository) SearchProducts(ctx context.Context, searchTxt string, first int,
+	cursor string) (ProductList, error) {
+	return ProductList{}, newErrRepository("Search not implemented for in memory repo")
+}
+
 func makeInMemoryRepository(config common.Configuration) (ProductRepository, error) {
 	var products []common.Product
 	var err error
