@@ -83,7 +83,7 @@ func TestGetConfiguration_FailDatAset(t *testing.T) {
 
 func TestGetConfiguration_PgSuccess(t *testing.T) {
 	setEnv("PROD", "POSTGRESQL", "60", "3333",
-		"postgres://postgres:***REMOVED***@localhost:5432/postgres?sslmode=disable", "NONE")
+		"postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable", "NONE")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
