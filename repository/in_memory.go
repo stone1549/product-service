@@ -73,7 +73,7 @@ func makeInMemoryRepository(config common.Configuration) (ProductRepository, err
 
 	// open a new index
 	mapping := bleve.NewIndexMapping()
-	idx, err := bleve.New("document", mapping)
+	idx, err := bleve.NewMemOnly(mapping)
 
 	if err == bleve.ErrorIndexPathExists {
 		idx, err = bleve.Open("document")
@@ -130,7 +130,7 @@ func loadInitInMemoryDataset(dataset common.InitDataset) ([]common.Product, erro
 		return products, err
 	}
 
-	jsonBytes, err := ioutil.ReadFile("data/" + filename)
+	jsonBytes, err := ioutil.ReadFile("../data/" + filename)
 	if err != nil {
 		return products, err
 	}
