@@ -42,10 +42,10 @@ func main() {
 
 	r.Route("/products", func(r chi.Router) {
 		r.With(service.SearchProductsMiddleware).Get("/search", service.SearchProducts)
-		r.With(service.ListProductsMiddleware).Get("/", service.ListProducts)
+		r.With(service.GetProductsMiddleware).Get("/", service.GetProducts)
 		r.Route("/{productId}", func(r chi.Router) {
-			r.Use(service.ProductMiddleware) // Load the *Article on the request context
-			r.Get("/", service.GetProduct)   // GET /articles/123
+			r.Use(service.GetProductMiddleware)
+			r.Get("/", service.GetProduct)
 		})
 	})
 

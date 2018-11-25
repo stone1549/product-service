@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type ErrResponse struct {
+type errResponse struct {
 	Err            error `json:"-"` // low-level runtime error
 	HTTPStatusCode int   `json:"-"` // http response status code
 
@@ -14,13 +14,13 @@ type ErrResponse struct {
 	ErrorText  string `json:"error,omitempty"` // application-level error message, for debugging
 }
 
-func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (e *errResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	render.Status(r, e.HTTPStatusCode)
 	return nil
 }
 
-func ErrInvalidRequest(err error) render.Renderer {
-	return &ErrResponse{
+func errInvalidRequest(err error) render.Renderer {
+	return &errResponse{
 		Err:            err,
 		HTTPStatusCode: 400,
 		StatusText:     "Invalid request.",
@@ -28,8 +28,8 @@ func ErrInvalidRequest(err error) render.Renderer {
 	}
 }
 
-func ErrRepository(err error) render.Renderer {
-	return &ErrResponse{
+func errRepository(err error) render.Renderer {
+	return &errResponse{
 		Err:            err,
 		HTTPStatusCode: 500,
 		StatusText:     "Unable to handle request at this time.",
@@ -37,8 +37,8 @@ func ErrRepository(err error) render.Renderer {
 	}
 }
 
-func ErrUnknown(err error) render.Renderer {
-	return &ErrResponse{
+func errUnknown(err error) render.Renderer {
+	return &errResponse{
 		Err:            err,
 		HTTPStatusCode: 500,
 		StatusText:     "Unknown server error.",
@@ -46,4 +46,4 @@ func ErrUnknown(err error) render.Renderer {
 	}
 }
 
-var ErrNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}
+var errNotFound = &errResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}

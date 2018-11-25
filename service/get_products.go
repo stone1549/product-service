@@ -31,7 +31,7 @@ func newProductListResponse(products []common.Product, cursor string) productLis
 	return productListResponse{results, cursor}
 }
 
-func ListProductsMiddleware(next http.Handler) http.Handler {
+func GetProductsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		first, err := strconv.Atoi(chi.URLParam(r, "first"))
 
@@ -44,17 +44,17 @@ func ListProductsMiddleware(next http.Handler) http.Handler {
 		productRepo, err := repository.GetProductRepository()
 
 		if err != nil {
-			render.Render(w, r, ErrRepository(err))
+			render.Render(w, r, errRepository(err))
 			return
 		}
 
 		productsList, err := productRepo.GetProducts(r.Context(), first, cursor)
 
 		if err != nil {
-			render.Render(w, r, ErrRepository(err))
+			render.Render(w, r, errRepository(err))
 			return
 		} else if len(productsList.Products) == 0 {
-			render.Render(w, r, ErrNotFound)
+			render.Render(w, r, errNotFound)
 			return
 		}
 
@@ -64,19 +64,19 @@ func ListProductsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func ListProducts(w http.ResponseWriter, r *http.Request) {
+func GetProducts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	products, ok := ctx.Value("products").([]common.Product)
 
 	if !ok {
-		render.Render(w, r, ErrUnknown(errors.New("unable to retrieve products at this time")))
+		render.Render(w, r, errUnknown(errors.New("unable to retrieve products at this time")))
 		return
 	}
 
 	cursor := r.Context().Value("cursor").(string)
 
 	if err := render.Render(w, r, newProductListResponse(products, cursor)); err != nil {
-		render.Render(w, r, ErrUnknown(err))
+		render.Render(w, r, errUnknown(err))
 		return
 	}
 }

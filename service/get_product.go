@@ -46,27 +46,27 @@ func newProductResponse(product common.Product) productResponse {
 	}
 }
 
-func ProductMiddleware(next http.Handler) http.Handler {
+func GetProductMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "productId")
 
 		if id == "" {
-			render.Render(w, r, ErrNotFound)
+			render.Render(w, r, errNotFound)
 		}
 
 		productRepo, err := repository.GetProductRepository()
 
 		if err != nil {
-			render.Render(w, r, ErrRepository(err))
+			render.Render(w, r, errRepository(err))
 			return
 		}
 
 		product, err := productRepo.GetProduct(r.Context(), id)
 
 		if err != nil {
-			render.Render(w, r, ErrRepository(err))
+			render.Render(w, r, errRepository(err))
 		} else if product == nil {
-			render.Render(w, r, ErrNotFound)
+			render.Render(w, r, errNotFound)
 			return
 		}
 
@@ -80,12 +80,12 @@ func GetProduct(w http.ResponseWriter, r *http.Request) {
 	product, ok := ctx.Value("product").(common.Product)
 
 	if !ok {
-		render.Render(w, r, ErrUnknown(errors.New("unable to retrieve product at this time")))
+		render.Render(w, r, errUnknown(errors.New("unable to retrieve product at this time")))
 		return
 	}
 
 	if err := render.Render(w, r, newProductResponse(product)); err != nil {
-		render.Render(w, r, ErrUnknown(err))
+		render.Render(w, r, errUnknown(err))
 		return
 	}
 }
