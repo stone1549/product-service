@@ -15,7 +15,7 @@ const (
 	timeoutSecondsKey string = "PRODUCT_SERVICE_TIMEOUT"
 	portKey           string = "PRODUCT_SERVICE_PORT"
 	pgUrlKey          string = "PRODUCT_SERVICE_PG_URL"
-	pgInitDatasetKey  string = "PRODUCT_SERVICE_INIT_DATASET"
+	initDatasetKey    string = "PRODUCT_SERVICE_INIT_DATASET"
 )
 
 type LifeCycle int
@@ -199,7 +199,7 @@ func GetConfiguration() (Configuration, error) {
 		return nil, err
 	}
 
-	initDatasetStr := os.Getenv(pgInitDatasetKey)
+	initDatasetStr := os.Getenv(initDatasetKey)
 	switch initDatasetStr {
 	case NoDataset.String():
 		config.initDataset = NoDataset
@@ -209,7 +209,7 @@ func GetConfiguration() (Configuration, error) {
 		if initDatasetStr == "" {
 			config.initDataset = NoDataset
 		} else {
-			err = errors.New(fmt.Sprintf("Invalid dataset, set %s environment variable properly or omit it", pgInitDatasetKey))
+			err = errors.New(fmt.Sprintf("Invalid dataset, set %s environment variable properly or omit it", initDatasetKey))
 		}
 	}
 
