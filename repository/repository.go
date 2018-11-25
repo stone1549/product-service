@@ -16,30 +16,17 @@ type ProductRepository interface {
 	SearchProducts(ctx context.Context, searchTxt string, first int, cursor string) (ProductList, error)
 }
 
-var repo ProductRepository
-
-func GetProductRepository() (ProductRepository, error) {
-	if repo == nil {
-		return nil, newErrRepository("ConfigureProductRepository must be called first")
-	}
-
-	return repo, nil
-}
-
-func ConfigureProductRepository(config common.Configuration) error {
+func NewProductRepository(config common.Configuration) (ProductRepository, error) {
 	var err error
-	if repo == nil {
-		switch config.GetRepoType() {
-		case common.InMemoryRepo:
-			repo, err = makeInMemoryRepository(config)
-		case common.PostgreSqlRepo:
-			repo, err = makePostgresqlProductRespository(config)
-		default:
-			err = newErrRepository("repository type unimplemented")
-		}
-	} else {
-		err = newErrRepository("ConfigureProductRepository called twice")
+	var repo ProductRepository
+	switch config.GetRepoType() {
+	case common.InMemoryRepo:
+		repo, err = makeInMemoryRepository(config)
+	case common.PostgreSqlRepo:
+		repo, err = makePostgresqlProductRespository(config)
+	default:
+		err = newErrRepository("repository type unimplemented")
 	}
 
-	return err
+	return repo, err
 }

@@ -54,10 +54,10 @@ func GetProductMiddleware(next http.Handler) http.Handler {
 			render.Render(w, r, errNotFound)
 		}
 
-		productRepo, err := repository.GetProductRepository()
+		productRepo, ok := r.Context().Value("repo").(repository.ProductRepository)
 
-		if err != nil {
-			render.Render(w, r, errRepository(err))
+		if !ok {
+			render.Render(w, r, errRepository(errors.New("ProductRepository not found in context")))
 			return
 		}
 
