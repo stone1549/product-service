@@ -164,11 +164,13 @@ func GetConfiguration() (Configuration, error) {
 
 	timeoutStr := os.Getenv(timeoutSecondsKey)
 
+	if timeoutStr == "" && config.lifeCycle == DevLifeCycle {
+		timeoutStr = "60"
+	}
+
 	timeoutInt, err := strconv.Atoi(timeoutStr)
 
-	if config.lifeCycle == DevLifeCycle && err != nil {
-		timeoutInt = 60
-	} else if err != nil {
+	if err != nil {
 		err = errors.New(fmt.Sprintf("No timeout configured, set %s environment variable", timeoutSecondsKey))
 		return nil, err
 	}
@@ -176,11 +178,13 @@ func GetConfiguration() (Configuration, error) {
 	config.timeout = time.Duration(timeoutInt) * time.Second
 
 	portStr := os.Getenv(portKey)
+
+	if portStr == "" && config.lifeCycle == DevLifeCycle {
+		portStr = "3333"
+	}
 	port, err := strconv.Atoi(portStr)
 
-	if config.lifeCycle == DevLifeCycle && err != nil {
-		config.port = 3333
-	} else if err != nil {
+	if err != nil {
 		err = errors.New(fmt.Sprintf("No port configured, set %s environment variable", portKey))
 		return nil, err
 	}
@@ -188,7 +192,11 @@ func GetConfiguration() (Configuration, error) {
 	config.port = port
 
 	if config.repoType == PostgreSqlRepo {
-		setPostgresqlConfig(&config)
+		err = setPostgresqlConfig(&config)
+	}
+
+	if err != nil {
+		return nil, err
 	}
 
 	initDatasetStr := os.Getenv(pgInitDatasetKey)
