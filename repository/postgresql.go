@@ -74,7 +74,7 @@ func scanProductFromRows(rows *sql.Rows) (*common.Product, error) {
 	return &result, err
 }
 
-func (ppr postgresqlProductRepository) ProductsFromRepo(ctx context.Context, first int, cursor string) (ProductList, error) {
+func (ppr postgresqlProductRepository) GetProducts(ctx context.Context, first int, cursor string) (ProductList, error) {
 	var result ProductList
 	var offset int
 	var err error
@@ -111,7 +111,7 @@ func (ppr postgresqlProductRepository) ProductsFromRepo(ctx context.Context, fir
 	return result, nil
 }
 
-func (ppr postgresqlProductRepository) ProductFromRepo(ctx context.Context, id string) (*common.Product, error) {
+func (ppr postgresqlProductRepository) GetProduct(ctx context.Context, id string) (*common.Product, error) {
 	row := ppr.db.QueryRowContext(ctx, getProductQuery, id)
 
 	if row == nil {

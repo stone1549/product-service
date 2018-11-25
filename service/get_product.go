@@ -61,7 +61,7 @@ func ProductMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		product, err := productRepo.ProductFromRepo(r.Context(), id)
+		product, err := productRepo.GetProduct(r.Context(), id)
 
 		if err != nil {
 			render.Render(w, r, ErrRepository(err))

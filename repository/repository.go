@@ -11,8 +11,8 @@ type ProductList struct {
 }
 
 type ProductRepository interface {
-	ProductsFromRepo(ctx context.Context, first int, cursor string) (ProductList, error)
-	ProductFromRepo(ctx context.Context, id string) (*common.Product, error)
+	GetProducts(ctx context.Context, first int, cursor string) (ProductList, error)
+	GetProduct(ctx context.Context, id string) (*common.Product, error)
 	SearchProducts(ctx context.Context, searchTxt string, first int, cursor string) (ProductList, error)
 }
 
