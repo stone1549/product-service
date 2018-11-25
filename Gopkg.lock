@@ -232,6 +232,14 @@
   pruneopts = "UT"
   revision = "62eef0e2fa9b2c385f7b2778e763486da6880d37"
 
+[[projects]]
+  branch = "v2"
+  digest = "1:a0ddbb48ec16c2abd7144b3be7de49d718f580d89098a73489ae4785a31dc841"
+  name = "gopkg.in/DATA-DOG/go-sqlmock.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c19298f520d0a6c884c7a7db515552efe5b3697b"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -243,6 +251,7 @@
     "github.com/lib/pq",
     "github.com/pkg/errors",
     "github.com/shopspring/decimal",
+    "gopkg.in/DATA-DOG/go-sqlmock.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
