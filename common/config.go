@@ -26,6 +26,19 @@ const (
 	ProdLifeCycle    LifeCycle = iota
 )
 
+func (lc LifeCycle) String() string {
+	switch lc {
+	case DevLifeCycle:
+		return "DEV"
+	case PreProdLifeCycle:
+		return "PRE_PROD"
+	case ProdLifeCycle:
+		return "PROD"
+	default:
+		return "DEV"
+	}
+}
+
 type ProductRepositoryType int
 
 const (
@@ -105,11 +118,11 @@ func GetConfiguration() (Configuration, error) {
 	lcStr := os.Getenv(lifeCycleKey)
 
 	switch lcStr {
-	case "DEV":
+	case DevLifeCycle.String():
 		config.lifeCycle = DevLifeCycle
-	case "PRE_PROD":
+	case PreProdLifeCycle.String():
 		config.lifeCycle = PreProdLifeCycle
-	case "PROD":
+	case ProdLifeCycle.String():
 		config.lifeCycle = ProdLifeCycle
 	default:
 		config.lifeCycle = DevLifeCycle
