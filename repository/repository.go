@@ -22,7 +22,7 @@ func NewProductRepository(config common.Configuration) (ProductRepository, error
 	var repo ProductRepository
 	switch config.GetRepoType() {
 	case common.InMemoryRepo:
-		repo, err = makeInMemoryRepository(config)
+		repo, err = MakeInMemoryRepository(config)
 	case common.PostgreSqlRepo:
 		db, err := sql.Open("postgres", config.GetPgUrl())
 

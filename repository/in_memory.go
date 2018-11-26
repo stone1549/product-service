@@ -17,11 +17,24 @@ type inMemoryProductRepository struct {
 func (impr *inMemoryProductRepository) GetProducts(_ context.Context, first int, cursor string) (ProductList, error) {
 	products := make([]common.Product, 0)
 
-	for _, product := range impr.products {
-		productCopy := product
-		products = append(products, productCopy)
+	newCursor := cursor
+	reachedCursor := false
+	if cursor == "" {
+		reachedCursor = true
 	}
-	return ProductList{products, ""}, nil
+	for _, product := range impr.products {
+		if len(products) == first {
+			break
+		} else if product.Id == cursor {
+			reachedCursor = true
+			continue
+		} else if reachedCursor {
+			productCopy := product
+			products = append(products, productCopy)
+			newCursor = productCopy.Id
+		}
+	}
+	return ProductList{products, newCursor}, nil
 }
 
 func findProductById(products []common.Product, id string) (*common.Product, error) {
@@ -49,11 +62,18 @@ func (impr *inMemoryProductRepository) SearchProducts(ctx context.Context, searc
 	}
 
 	products := make([]common.Product, 0)
-	var newCursor string
+	newCursor := cursor
+	reachedCursor := false
+	if cursor == "" {
+		reachedCursor = true
+	}
 	for _, hit := range searchResults.Hits {
 		if len(products) == first {
 			break
-		} else if hit.ID == cursor || cursor == "" || len(products) > 1 {
+		} else if hit.ID == cursor {
+			reachedCursor = true
+			continue
+		} else if reachedCursor {
 			product, err := findProductById(impr.products, hit.ID)
 
 			if err != nil {
@@ -67,7 +87,7 @@ func (impr *inMemoryProductRepository) SearchProducts(ctx context.Context, searc
 	return ProductList{products, newCursor}, nil
 }
 
-func makeInMemoryRepository(config common.Configuration) (ProductRepository, error) {
+func MakeInMemoryRepository(config common.Configuration) (ProductRepository, error) {
 	var products []common.Product
 	var err error
 
