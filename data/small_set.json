@@ -7,7 +7,9 @@
     "description": "The Portal Gun is a gadget that allows the user(s) to travel between different universes/dimensions/realities.\n\nThe Gun was likely created by a Rick, although it is unknown which one; if there is any truth to C-137's fabricated origin story, then he may not be the original inventor.",
     "shortDescription": "Travel between different dimensions!",
     "id": "1",
-    "qtyInStock": 1
+    "qtyInStock": 1,
+    "createdAt": "2017-01-01T00:00:00Z",
+    "updatedAt": "2018-01-01T00:00:20Z"
   },
   {
     "name": "Plumbus",
@@ -17,7 +19,9 @@
     "description": "A Plumbus is an all-purpose home device. Everyone knows what it does, so there is no reason to explain it. A common household and office item used as an accent piece to the room.",
     "shortDescription": "Everyone knows what it does, so there is no reason to explain it.",
     "id": "2",
-    "qtyInStock": 1000
+    "qtyInStock": 1000,
+    "createdAt": "2017-01-01T00:00:01Z",
+    "updatedAt": "2018-01-01T00:00:19Z"
   },
   {
     "name": "Interdimensional Cable Box",
@@ -27,7 +31,9 @@
     "description": "A cable box that has access to all of the TV shows in the entire multiverse. The interdimensional cable can receive all of the TV channels from every planet, dimension, universe, reality, etc. and broadcast it right on whatever television it is hooked up to.",
     "shortDescription": "Dimension spanning cable!",
     "id": "3",
-    "qtyInStock": 500
+    "qtyInStock": 500,
+    "createdAt": "2017-01-01T00:00:02Z",
+    "updatedAt": "2018-01-01T00:00:18Z"
   },
   {
     "name": "Butter Robot",
@@ -37,7 +43,9 @@
     "description": "A small, two armed, mobile robot Rick Sanchez created for the sole purpose of passing butter.",
     "shortDescription": "It passes butter!",
     "id": "4",
-    "qtyInStock": 145
+    "qtyInStock": 145,
+    "createdAt": "2017-01-01T00:00:03Z",
+    "updatedAt": "2018-01-01T00:00:17Z"
   },
   {
     "name": "Broken Leg Serum",
@@ -47,7 +55,9 @@
     "description": "A miracle serum for healing broken legs. Just one quick injection and all of subjects legs will be miraculously healed.",
     "shortDescription": "Heals broken legs instantly with one injection!",
     "id": "5",
-    "qtyInStock": 10000
+    "qtyInStock": 10000,
+    "createdAt": "2017-01-01T00:00:04Z",
+    "updatedAt": "2018-01-01T00:00:16Z"
   },
   {
     "name": "Mega Seeds",
@@ -57,7 +67,9 @@
     "description": "Mega Seeds are large, brown, and teardrop-shaped. Their surface is wrinkled in a fashion similar to walnuts, additionally, they sport small bristles and tiny bumps all over.\n\nTheir only known property is the ability to endow a person with super-intelligence when dissolved in person's anal cavity. After a short period of time, the super-intelligence wears off and the seed instead causes loss of motor and brain function for several days.",
     "shortDescription": "Become more smarter!",
     "id": "6",
-    "qtyInStock": 176
+    "qtyInStock": 176,
+    "createdAt": "2017-01-01T00:00:05Z",
+    "updatedAt": "2018-01-01T00:00:15Z"
   },
   {
     "name": "Meeseeks Box",
@@ -67,7 +79,9 @@
     "description": "A gadget which creates a Mr. Meeseeks for the purpose of completing one objective. Once it completes the objective, Mr. Meeseeks vanished.",
     "shortDescription": "Creates a Mr. Meeseeks for the purpose of completing one given objective!",
     "id": "7",
-    "qtyInStock": 1333
+    "qtyInStock": 1333,
+    "createdAt": "2017-01-01T00:00:06Z",
+    "updatedAt": "2018-01-01T00:00:14Z"
   },
   {
     "name": "Neutrino Bomb",
@@ -77,7 +91,9 @@
     "description": "Presumably radiates lethal amounts of neutrinos when detonated. Because neutrinos can pass through matter almost unimpeded, a sufficient intensity of neutrinos will travel through the earth and deliver a lethal dose to the entire population in a fraction of a second.",
     "shortDescription": "60% of the time is works 100% of the time!",
     "id": "8",
-    "qtyInStock": 1213
+    "qtyInStock": 1213,
+    "createdAt": "2017-01-01T00:00:07Z",
+    "updatedAt": "2018-01-01T00:00:13Z"
   },
   {
     "name": "Cognition Amplifier",
@@ -87,7 +103,9 @@
     "description": "A device that, when worn properly, will increase the wearer's intelligence by a variable amount. Takes up to four AA batteries.",
     "shortDescription": "Boost your intelligence!",
     "id": "9",
-    "qtyInStock": 12314
+    "qtyInStock": 12314,
+    "createdAt": "2017-01-01T00:00:08Z",
+    "updatedAt": "2018-01-01T00:00:12Z"
   },
   {
     "name": "Yummy Yums",
@@ -97,7 +115,9 @@
     "description": "Yummy' Yums are chocolate candy bars from the Purge Planet. They contained in the past a substance known as Purgenol, which can make those that consume it aggressive and violent.",
     "shortDescription": "Now Purgenol free!",
     "id": "10",
-    "qtyInStock": 100
+    "qtyInStock": 100,
+    "createdAt": "2017-01-01T00:00:09Z",
+    "updatedAt": "2018-01-01T00:00:11Z"
   },
   {
     "name": "Dream Inceptor",
@@ -107,7 +127,9 @@
     "description": "You place it into someones ear while they are asleep, and then you can enter their dreams.\n\nIn order to return from the dream, the dreamer must be woken up, typically by dream death, which seemingly does not affect them in the real world. It is assumed that the death in dream resulting in death in real life only occurs if you are not the dreamer, but are merely incepting inside of someone else's.\n\nThe dream inceptor produces a high pitched whine when activated, similar to the sound an older camera flash would make as it charged. If it is used inside a dream, the effects of time will become 100 times slower in the next dream, although it is unclear whether each subsequent dream will be a power of ten time decrease, or a fixed 100x multiplier.",
     "shortDescription": "It's a device, that when you put it in your ear, you can enter people's dreams.",
     "id": "11",
-    "qtyInStock": 30
+    "qtyInStock": 30,
+    "createdAt": "2017-01-01T00:00:10Z",
+    "updatedAt": "2018-01-01T00:00:10Z"
   },
   {
     "name": "Freeze Ray",
@@ -117,7 +139,9 @@
     "description": "Can freeze organic targets until they became an icy statue. The effects are reversible but make the target extremely fragile and prone to shattering.",
     "shortDescription": "Can freeze organic targets until they became an icy statue!",
     "id": "12",
-    "qtyInStock": 100
+    "qtyInStock": 100,
+    "createdAt": "2017-01-01T00:00:11Z",
+    "updatedAt": "2018-01-01T00:00:09Z"
   },
   {
     "name": "Grappling Shoes",
@@ -127,7 +151,9 @@
     "description": "Allows the wearer to walk on any surface, regardless of the incline or texture!",
     "shortDescription": "Allows the wearer to walk on any surface, regardless of the incline or texture!",
     "id": "13",
-    "qtyInStock": 12
+    "qtyInStock": 12,
+    "createdAt": "2017-01-01T00:00:12Z",
+    "updatedAt": "2018-01-01T00:00:08Z"
   },
   {
     "name": "Shrink Ray",
@@ -137,7 +163,9 @@
     "description": "Miniaturization doesn't actually make sense unless you miniaturize the very atoms of which matter is composed. Otherwise a tiny brain in a man the size of an insect, composed of normal atoms, is composed of too few atoms for the miniaturized man to be any more intelligent than the ant. Also, miniaturizing atoms is impossible according to the rules of quantum mechanics.",
     "shortDescription": "Device which uses energy to reduce the physical size of matter!",
     "id": "14",
-    "qtyInStock": 5
+    "qtyInStock": 5,
+    "createdAt": "2017-01-01T00:00:13Z",
+    "updatedAt": "2018-01-01T00:00:07Z"
   },
   {
     "name": "Kalaxian Crystals",
@@ -147,7 +175,9 @@
     "description": "Kalaxian Crystals are found growing in a parallel universe. They can be broken down and snorted to achieve a Spice (Dune) like effect.",
     "shortDescription": "Spice is life!",
     "id": "15",
-    "qtyInStock": 1000
+    "qtyInStock": 1000,
+    "createdAt": "2017-01-01T00:00:14Z",
+    "updatedAt": "2018-01-01T00:00:06Z"
   },
   {
     "name": "Time Stabilizing Collar",
@@ -157,7 +187,9 @@
     "description": "Merges multiple timelines into one!",
     "shortDescription": "Merges multiple timelines into one!",
     "id": "16",
-    "qtyInStock": 780
+    "qtyInStock": 780,
+    "createdAt": "2017-01-01T00:00:15Z",
+    "updatedAt": "2018-01-01T00:00:05Z"
   },
   {
     "name": "Time Crystal",
@@ -167,7 +199,9 @@
     "description": "Time Crystals are a material that is capable of interacting with the flow of time and bypassing split timelines.",
     "shortDescription": "Material that is capable of interacting with the flow of time and bypassing split timelines!",
     "id": "17",
-    "qtyInStock": 666
+    "qtyInStock": 666,
+    "createdAt": "2017-01-01T00:00:16Z",
+    "updatedAt": "2018-01-01T00:00:04Z"
   },
   {
     "name": "Love Potion",
@@ -177,7 +211,9 @@
     "description": "This potion will, upon consumption, cause a person to fall in love with the next person they see.",
     "shortDescription": "No personality? No problem!",
     "id": "18",
-    "qtyInStock": 99
+    "qtyInStock": 99,
+    "createdAt": "2017-01-01T00:00:17Z",
+    "updatedAt": "2018-01-01T00:00:03Z"
   },
   {
     "name": "Courier Flap",
@@ -187,7 +223,9 @@
     "description": "Courier Flaps are an organic species that deliver messages and packages across the galaxy.",
     "shortDescription": "Cross galaxy courier!",
     "id": "19",
-    "qtyInStock": 499
+    "qtyInStock": 499,
+    "createdAt": "2017-01-01T00:00:18Z",
+    "updatedAt": "2018-01-01T00:00:02Z"
   },
   {
     "name": "Roy Game",
@@ -197,6 +235,8 @@
     "description": "Players assume the role of Roy, and the goal of the game is to guide Roy through life, from childhood to death, overcoming obstacles along the way. The game's programming will adjust Roy's life path and the events that happen to him according to the decisions the player makes.\n\nThere is no point system in the game as the final score for the player is how many years Roy lived. To the unprepared players though, the game can be disorientating, as the memories players gain from the game will conflict with the ones from real life.",
     "shortDescription": "A life well lived!",
     "id": "20",
-    "qtyInStock": 299
+    "qtyInStock": 299,
+    "createdAt": "2017-01-01T00:00:19Z",
+    "updatedAt": "2018-01-01T00:00:01Z"
   }
 ]

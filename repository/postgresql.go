@@ -11,15 +11,15 @@ import (
 )
 
 const (
-	listProductsQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock 
-							FROM product LIMIT $1 OFFSET $2`
-	getProductQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock 
-						FROM product WHERE id=$1`
+	listProductsQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, 
+							created_at, updated_at FROM product LIMIT $1 OFFSET $2`
+	getProductQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, 
+						created_at, updated_at FROM product WHERE id=$1`
 	insertProductQuery = `INSERT INTO product (id, name, description, short_description, display_image, thumbnail, 
 							price, qty_in_stock) 
 						  	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
-	searchProductQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock 
-							FROM product WHERE 
+	searchProductQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, 
+							qty_in_stock, created_at, updated_at FROM product WHERE 
 								textsearchable_index_col @@ to_tsquery($1) 
 							ORDER BY textsearchable_index_col 
 							LIMIT $2 OFFSET $3`
@@ -34,7 +34,7 @@ func scanProductFromRow(row *sql.Row) (*common.Product, error) {
 
 	var priceStr string
 	err := row.Scan(&result.Id, &result.Name, &result.Description, &result.ShortDescription, &result.DisplayImage,
-		&result.Thumbnail, &priceStr, &result.QtyInStock)
+		&result.Thumbnail, &priceStr, &result.QtyInStock, &result.CreatedAt, &result.UpdatedAt)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -59,7 +59,7 @@ func scanProductFromRows(rows *sql.Rows) (*common.Product, error) {
 
 	var priceStr string
 	err := rows.Scan(&result.Id, &result.Name, &result.Description, &result.ShortDescription, &result.DisplayImage,
-		&result.Thumbnail, &priceStr, &result.QtyInStock)
+		&result.Thumbnail, &priceStr, &result.QtyInStock, &result.CreatedAt, &result.UpdatedAt)
 
 	if priceStr != "" {
 		price, err := decimal.NewFromString(priceStr)

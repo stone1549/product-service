@@ -7,6 +7,7 @@ import (
 	"github.com/stone1549/product-service/repository"
 	"gopkg.in/DATA-DOG/go-sqlmock.v2"
 	"testing"
+	"time"
 )
 
 func mockExpectExecTimes(mock sqlmock.Sqlmock, sqlRegexStr string, times int) {
@@ -59,9 +60,13 @@ func getProductColumns() []string {
 	columns = append(columns, "thumbnail")
 	columns = append(columns, "price")
 	columns = append(columns, "qty_in_stock")
+	columns = append(columns, "created_at")
+	columns = append(columns, "updated_at")
 	return columns
 }
 func addExpectedProductId1Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	createdAt, _ := time.Parse("2006-01-15T15:20:59", "2017-01-01T00:00:00Z")
+	updatedAt, _ := time.Parse("2006-01-15T15:20:59", "2018-01-01T00:00:20Z")
 	return rows.AddRow(
 		"1",
 		"Portal Gun",
@@ -73,10 +78,14 @@ func addExpectedProductId1Row(rows *sqlmock.Rows) *sqlmock.Rows {
 		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
 		"2499.990000",
 		1,
+		createdAt,
+		updatedAt,
 	)
 }
 
 func addExpectedProductId2Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	createdAt, _ := time.Parse("2006-01-15T15:20:59", "2017-01-01T00:00:01Z")
+	updatedAt, _ := time.Parse("2006-01-15T15:20:59", "2018-01-01T00:00:19Z")
 	return rows.AddRow(
 		"2",
 		"Portal Gun",
@@ -88,10 +97,14 @@ func addExpectedProductId2Row(rows *sqlmock.Rows) *sqlmock.Rows {
 		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
 		"2499.990000",
 		1,
+		createdAt,
+		updatedAt,
 	)
 }
 
 func addExpectedProductId3Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	createdAt, _ := time.Parse("2006-01-15T15:20:59", "2017-01-01T00:00:02Z")
+	updatedAt, _ := time.Parse("2006-01-15T15:20:59", "2018-01-01T00:00:18Z")
 	return rows.AddRow(
 		"3",
 		"Portal Gun",
@@ -103,10 +116,14 @@ func addExpectedProductId3Row(rows *sqlmock.Rows) *sqlmock.Rows {
 		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
 		"2499.990000",
 		10,
+		createdAt,
+		updatedAt,
 	)
 }
 
 func addExpectedProductId4Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	createdAt, _ := time.Parse("2006-01-15T15:20:59", "2017-01-01T00:00:03Z")
+	updatedAt, _ := time.Parse("2006-01-15T15:20:59", "2018-01-01T00:00:17Z")
 	return rows.AddRow(
 		"4",
 		"Portal Gun",
@@ -118,10 +135,14 @@ func addExpectedProductId4Row(rows *sqlmock.Rows) *sqlmock.Rows {
 		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
 		"2499.990000",
 		1,
+		createdAt,
+		updatedAt,
 	)
 }
 
 func addExpectedProductId5Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	createdAt, _ := time.Parse("2006-01-15T15:20:59", "2017-01-01T00:00:04Z")
+	updatedAt, _ := time.Parse("2006-01-15T15:20:59", "2018-01-01T00:00:16Z")
 	return rows.AddRow(
 		"5",
 		"Portal Gun",
@@ -133,6 +154,8 @@ func addExpectedProductId5Row(rows *sqlmock.Rows) *sqlmock.Rows {
 		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
 		"2499.990000",
 		1,
+		createdAt,
+		updatedAt,
 	)
 }
 

@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/shopspring/decimal"
+	"time"
 )
 
 type Product struct {
@@ -13,4 +14,6 @@ type Product struct {
 	Description      *string          `json:"description"`
 	ShortDescription *string          `json:"shortDescription"`
 	QtyInStock       int              `json:"qtyInStock"`
+	CreatedAt        *time.Time       `json:"createdAt"`
+	UpdatedAt        *time.Time       `json:"updatedAt"`
 }
