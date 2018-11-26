@@ -76,11 +76,71 @@ func addExpectedProductId1Row(rows *sqlmock.Rows) *sqlmock.Rows {
 	)
 }
 
+func addExpectedProductId2Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	return rows.AddRow(
+		"2",
+		"Portal Gun",
+		"The Portal Gun is a gadget that allows the user(s) to travel between different universes/dimensions/"+
+			"realities.\n\nThe Gun was likely created by a Rick, although it is unknown which one; if there is any "+
+			"truth to C-137's fabricated origin story, then he may not be the original inventor.",
+		"Travel between different dimensions!",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"2499.990000",
+		1,
+	)
+}
+
+func addExpectedProductId3Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	return rows.AddRow(
+		"3",
+		"Portal Gun",
+		"The Portal Gun is a gadget that allows the user(s) to travel between different universes/dimensions/"+
+			"realities.\n\nThe Gun was likely created by a Rick, although it is unknown which one; if there is any "+
+			"truth to C-137's fabricated origin story, then he may not be the original inventor.",
+		"Travel between different dimensions!",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"2499.990000",
+		10,
+	)
+}
+
+func addExpectedProductId4Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	return rows.AddRow(
+		"4",
+		"Portal Gun",
+		"The Portal Gun is a gadget that allows the user(s) to travel between different universes/dimensions/"+
+			"realities.\n\nThe Gun was likely created by a Rick, although it is unknown which one; if there is any "+
+			"truth to C-137's fabricated origin story, then he may not be the original inventor.",
+		"Travel between different dimensions!",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"2499.990000",
+		1,
+	)
+}
+
+func addExpectedProductId5Row(rows *sqlmock.Rows) *sqlmock.Rows {
+	return rows.AddRow(
+		"5",
+		"Portal Gun",
+		"The Portal Gun is a gadget that allows the user(s) to travel between different universes/dimensions/"+
+			"realities.\n\nThe Gun was likely created by a Rick, although it is unknown which one; if there is any "+
+			"truth to C-137's fabricated origin story, then he may not be the original inventor.",
+		"Travel between different dimensions!",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"https://images-na.ssl-images-amazon.com/images/I/31s7nNMzMUL.jpg",
+		"2499.990000",
+		1,
+	)
+}
+
 func newProductRows() *sqlmock.Rows {
 	return sqlmock.NewRows(getProductColumns())
 }
 
-func TestGetProduct_SuccessWithResult(t *testing.T) {
+func TestGetProduct_PgSuccessWithResult(t *testing.T) {
 	db, mock, repo, err := makeAndTestPgSmallRepo()
 	defer db.Close()
 	ok(t, err)
@@ -95,7 +155,7 @@ func TestGetProduct_SuccessWithResult(t *testing.T) {
 	ok(t, mock.ExpectationsWereMet())
 }
 
-func TestGetProduct_SuccessWithNoResult(t *testing.T) {
+func TestGetProduct_PgSuccessWithNoResult(t *testing.T) {
 	db, mock, repo, err := makeAndTestPgSmallRepo()
 	defer db.Close()
 	ok(t, err)
@@ -105,11 +165,11 @@ func TestGetProduct_SuccessWithNoResult(t *testing.T) {
 	product, err := repo.GetProduct(context.Background(), "1")
 
 	ok(t, err)
-	assert(t, product == nil, "Expected product to be nil")
+	assert(t, product == nil, "expected product to be nil")
 	ok(t, mock.ExpectationsWereMet())
 }
 
-func TestGetProduct_Error(t *testing.T) {
+func TestGetProduct_PgError(t *testing.T) {
 	db, mock, repo, err := makeAndTestPgSmallRepo()
 	defer db.Close()
 	ok(t, err)
@@ -117,6 +177,134 @@ func TestGetProduct_Error(t *testing.T) {
 	mock.ExpectQuery("SELECT .* FROM product WHERE id=\\$1").WithArgs("1").
 		WillReturnError(errors.New("test mock error"))
 	_, err = repo.GetProduct(context.Background(), "1")
+
+	notOk(t, err)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestGetProducts_PgSuccessWithPartialResults(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+		WithArgs(5, 0).
+		WillReturnRows(addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))
+	products, err := repo.GetProducts(context.Background(), 5, "")
+
+	ok(t, err)
+	equals(t, 2, len(products.Products))
+	equals(t, "2", products.Cursor)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestGetProduct_PgSuccessWithFullResults(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	expRows := addExpectedProductId5Row(addExpectedProductId4Row(addExpectedProductId3Row(
+		addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))))
+	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+		WithArgs(5, 0).
+		WillReturnRows(expRows)
+	products, err := repo.GetProducts(context.Background(), 5, "")
+
+	ok(t, err)
+	equals(t, 5, len(products.Products))
+	equals(t, "5", products.Cursor)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestGetProduct_PgSuccessWithFullResultsEmptyPageTwo(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+		WithArgs(5, 5).
+		WillReturnRows(newProductRows())
+	products, err := repo.GetProducts(context.Background(), 5, "5")
+
+	ok(t, err)
+	equals(t, 0, len(products.Products))
+	equals(t, "5", products.Cursor)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestGetProducts_PgError(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+		WithArgs(5, 5).
+		WillReturnError(errors.New("test error"))
+	_, err = repo.GetProducts(context.Background(), 5, "5")
+
+	notOk(t, err)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestSearchProducts_PgSuccessWithPartialResults(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	mock.ExpectQuery("SELECT .* FROM product").
+		WithArgs("portal", 5, 0).
+		WillReturnRows(addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))
+	products, err := repo.SearchProducts(context.Background(), "portal", 5, "")
+
+	ok(t, err)
+	equals(t, 2, len(products.Products))
+	equals(t, "2", products.Cursor)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestSearchProducts_PgSuccessWithFullResults(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	expRows := addExpectedProductId5Row(addExpectedProductId4Row(addExpectedProductId3Row(
+		addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))))
+	mock.ExpectQuery("SELECT .* FROM product").
+		WithArgs("portal", 5, 0).
+		WillReturnRows(expRows)
+	products, err := repo.SearchProducts(context.Background(), "portal", 5, "")
+
+	ok(t, err)
+	equals(t, 5, len(products.Products))
+	equals(t, "5", products.Cursor)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestSearchProducts_PgSuccessWithFullResultsEmptyPageTwo(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	mock.ExpectQuery("SELECT .* FROM product").
+		WithArgs("portal", 5, 5).
+		WillReturnRows(newProductRows())
+	products, err := repo.SearchProducts(context.Background(), "portal", 5, "5")
+
+	ok(t, err)
+	equals(t, 0, len(products.Products))
+	equals(t, "5", products.Cursor)
+	ok(t, mock.ExpectationsWereMet())
+}
+
+func TestSearchProducts_PgError(t *testing.T) {
+	db, mock, repo, err := makeAndTestPgSmallRepo()
+	defer db.Close()
+	ok(t, err)
+
+	mock.ExpectQuery("SELECT .* FROM product").
+		WithArgs("portal", 5, 5).
+		WillReturnError(errors.New("test error"))
+	_, err = repo.SearchProducts(context.Background(), "portal", 5, "5")
 
 	notOk(t, err)
 	ok(t, mock.ExpectationsWereMet())
