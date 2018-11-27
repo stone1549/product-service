@@ -103,13 +103,10 @@ func MakeInMemoryRepository(config common.Configuration) (ProductRepository, err
 		return nil, err
 	}
 
-	switch config.GetInitDataSet() {
-	case common.NoDataset:
+	if config.GetInitDataSet() == "" {
 		products = make([]common.Product, 0)
-	case common.SmallDataset:
+	} else {
 		products, err = loadInitInMemoryDataset(config.GetInitDataSet())
-	default:
-		err = newErrRepository("Unsupported dataset %s for repo type PostgreSqlRepo")
 	}
 
 	for _, product := range products {
@@ -134,23 +131,15 @@ func MakeInMemoryRepository(config common.Configuration) (ProductRepository, err
 	return &inMemoryProductRepository{products, idx}, err
 }
 
-func loadInitInMemoryDataset(dataset common.InitDataset) ([]common.Product, error) {
+func loadInitInMemoryDataset(dataset string) ([]common.Product, error) {
 	var err error
 	products := make([]common.Product, 0)
-
-	var filename string
-	switch dataset {
-	case common.SmallDataset:
-		filename = "small_set.json"
-	default:
-		err = newErrRepository("Unsupported dataset %s for repo type PostgreSqlRepo")
-	}
 
 	if err != nil {
 		return products, err
 	}
 
-	jsonBytes, err := ioutil.ReadFile("../data/" + filename)
+	jsonBytes, err := ioutil.ReadFile(dataset)
 	if err != nil {
 		return products, err
 	}

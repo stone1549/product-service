@@ -40,56 +40,50 @@ func TestGetConfiguration_Defaults(t *testing.T) {
 }
 
 func TestGetConfiguration_ImSuccess(t *testing.T) {
-	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "NONE")
+	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
 func TestGetConfiguration_ImSuccessSmallDataset(t *testing.T) {
-	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "SMALL")
+	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "../data/small_set.json")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
 func TestGetConfiguration_ImSuccessNoneDataset(t *testing.T) {
-	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "NONE")
+	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
 func TestGetConfiguration_FailRepo(t *testing.T) {
-	setEnv("PROD", "", "60", "3333", "", "NONE")
+	setEnv("PROD", "", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
 	notOk(t, err)
 }
 
 func TestGetConfiguration_FailTimeout(t *testing.T) {
-	setEnv("PROD", "IN_MEMORY", "", "3333", "", "NONE")
+	setEnv("PROD", "IN_MEMORY", "", "3333", "", "")
 	_, err := common.GetConfiguration()
 	notOk(t, err)
 }
 
 func TestGetConfiguration_FailPort(t *testing.T) {
-	setEnv("PROD", "IN_MEMORY", "60", "", "", "NONE")
-	_, err := common.GetConfiguration()
-	notOk(t, err)
-}
-
-func TestGetConfiguration_FailDatAset(t *testing.T) {
-	setEnv("PROD", "IN_MEMORY", "60", "3333", "", "HUGE")
+	setEnv("PROD", "IN_MEMORY", "60", "", "", "")
 	_, err := common.GetConfiguration()
 	notOk(t, err)
 }
 
 func TestGetConfiguration_PgSuccess(t *testing.T) {
 	setEnv("PROD", "POSTGRESQL", "60", "3333",
-		"postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable", "NONE")
+		"postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable", "")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
 func TestGetConfiguration_PgFailPgUrl(t *testing.T) {
-	setEnv("PROD", "POSTGRESQL", "60", "3333", "", "NONE")
+	setEnv("PROD", "POSTGRESQL", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
 	notOk(t, err)
 }

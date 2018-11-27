@@ -57,24 +57,6 @@ func (prt ProductRepositoryType) String() string {
 	}
 }
 
-type InitDataset int
-
-const (
-	NoDataset    InitDataset = 0
-	SmallDataset InitDataset = iota
-)
-
-func (id InitDataset) String() string {
-	switch id {
-	case SmallDataset:
-		return "SMALL"
-	case NoDataset:
-		return "NONE"
-	default:
-		return ""
-	}
-}
-
 type Configuration interface {
 	// Required config
 	GetLifeCycle() LifeCycle
@@ -83,7 +65,7 @@ type Configuration interface {
 	GetPort() int
 
 	// Optional config
-	GetInitDataSet() InitDataset
+	GetInitDataSet() string
 
 	// PostgreSqlRepo config
 	GetPgUrl() string
@@ -95,7 +77,7 @@ type configuration struct {
 	timeout     time.Duration
 	port        int
 	pgUrl       string
-	initDataset InitDataset
+	initDataset string
 }
 
 func (conf *configuration) GetLifeCycle() LifeCycle {
@@ -118,7 +100,7 @@ func (conf *configuration) GetPgUrl() string {
 	return conf.pgUrl
 }
 
-func (conf *configuration) GetInitDataSet() InitDataset {
+func (conf *configuration) GetInitDataSet() string {
 	return conf.initDataset
 }
 
@@ -199,19 +181,7 @@ func GetConfiguration() (Configuration, error) {
 		return nil, err
 	}
 
-	initDatasetStr := os.Getenv(initDatasetKey)
-	switch initDatasetStr {
-	case NoDataset.String():
-		config.initDataset = NoDataset
-	case SmallDataset.String():
-		config.initDataset = SmallDataset
-	default:
-		if initDatasetStr == "" {
-			config.initDataset = NoDataset
-		} else {
-			err = errors.New(fmt.Sprintf("Invalid dataset, set %s environment variable properly or omit it", initDatasetKey))
-		}
-	}
+	config.initDataset = os.Getenv(initDatasetKey)
 
 	if err != nil {
 		return nil, err

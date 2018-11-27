@@ -160,7 +160,7 @@ func (ppr *postgresqlProductRepository) SearchProducts(ctx context.Context, sear
 	return result, nil
 }
 
-func loadInitPostgresqlData(db *sql.DB, dataset common.InitDataset) error {
+func loadInitPostgresqlData(db *sql.DB, dataset string) error {
 	products, err := loadInitInMemoryDataset(dataset)
 
 	if err != nil {
@@ -187,12 +187,8 @@ func loadInitPostgresqlData(db *sql.DB, dataset common.InitDataset) error {
 
 func MakePostgresqlProductRespository(config common.Configuration, db *sql.DB) (ProductRepository, error) {
 	var err error
-	switch config.GetInitDataSet() {
-	case common.NoDataset:
-	case common.SmallDataset:
+	if config.GetInitDataSet() != "" {
 		err = loadInitPostgresqlData(db, config.GetInitDataSet())
-	default:
-		err = newErrRepository("Unsupported dataset %s for repo type PostgreSqlRepo")
 	}
 
 	if err != nil {

@@ -20,11 +20,12 @@ type ProductRepository interface {
 func NewProductRepository(config common.Configuration) (ProductRepository, error) {
 	var err error
 	var repo ProductRepository
+	var db *sql.DB
 	switch config.GetRepoType() {
 	case common.InMemoryRepo:
 		repo, err = MakeInMemoryRepository(config)
 	case common.PostgreSqlRepo:
-		db, err := sql.Open("postgres", config.GetPgUrl())
+		db, err = sql.Open("postgres", config.GetPgUrl())
 
 		if err != nil {
 			return nil, err

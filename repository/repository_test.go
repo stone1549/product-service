@@ -83,18 +83,18 @@ func (c configuration) GetPort() int {
 	return 3333
 }
 
-func (c configuration) GetInitDataSet() common.InitDataset {
+func (c configuration) GetInitDataSet() string {
 	switch c {
 	case inMemoryEmpty:
 		fallthrough
 	case pgEmpty:
-		return common.NoDataset
+		return ""
 	case inMemorySmall:
 		fallthrough
 	case pgSmall:
-		return common.SmallDataset
+		return "../data/small_set.json"
 	default:
-		return common.NoDataset
+		return ""
 	}
 }
 
