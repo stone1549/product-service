@@ -12,7 +12,7 @@ import (
 
 const (
 	listProductsQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, 
-							created_at, updated_at FROM product LIMIT $1 OFFSET $2`
+							created_at, updated_at FROM product ORDER BY updated_at DESC, created_at DESC LIMIT $1 OFFSET $2`
 	getProductQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, 
 						created_at, updated_at FROM product WHERE id=$1`
 	insertProductQuery = `INSERT INTO product (id, name, description, short_description, display_image, thumbnail, 

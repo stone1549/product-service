@@ -7,11 +7,32 @@ import (
 	"github.com/blevesearch/bleve"
 	"github.com/stone1549/product-service/common"
 	"io/ioutil"
+	"sort"
 )
 
 type inMemoryProductRepository struct {
 	products []common.Product
 	index    bleve.Index
+}
+
+type sortDefault []common.Product
+
+func (s sortDefault) Len() int {
+	return len(s)
+}
+
+func (s sortDefault) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s sortDefault) Less(i, j int) bool {
+	if s[i].UpdatedAt.Unix() > s[j].UpdatedAt.Unix() {
+		return true
+	} else if s[i].UpdatedAt.Unix() == s[j].UpdatedAt.Unix() {
+		return s[i].CreatedAt.Unix() > s[j].CreatedAt.Unix()
+	} else {
+		return false
+	}
 }
 
 func (impr *inMemoryProductRepository) GetProducts(_ context.Context, first int, cursor string) (ProductList, error) {
@@ -22,6 +43,7 @@ func (impr *inMemoryProductRepository) GetProducts(_ context.Context, first int,
 	if cursor == "" {
 		reachedCursor = true
 	}
+
 	for _, product := range impr.products {
 		if len(products) == first {
 			break
@@ -146,5 +168,8 @@ func loadInitInMemoryDataset(dataset string) ([]common.Product, error) {
 
 	err = json.Unmarshal(jsonBytes, &products)
 
+	if err != nil {
+		sort.Sort(sortDefault(products))
+	}
 	return products, err
 }

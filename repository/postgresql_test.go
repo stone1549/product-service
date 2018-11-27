@@ -210,7 +210,7 @@ func TestGetProducts_PgSuccessWithPartialResults(t *testing.T) {
 	defer db.Close()
 	ok(t, err)
 
-	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
 		WithArgs(5, 0).
 		WillReturnRows(addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))
 	products, err := repo.GetProducts(context.Background(), 5, "")
@@ -221,14 +221,14 @@ func TestGetProducts_PgSuccessWithPartialResults(t *testing.T) {
 	ok(t, mock.ExpectationsWereMet())
 }
 
-func TestGetProduct_PgSuccessWithFullResults(t *testing.T) {
+func TestGetProducts_PgSuccessWithFullResults(t *testing.T) {
 	db, mock, repo, err := makeAndTestPgSmallRepo()
 	defer db.Close()
 	ok(t, err)
 
 	expRows := addExpectedProductId5Row(addExpectedProductId4Row(addExpectedProductId3Row(
 		addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))))
-	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
 		WithArgs(5, 0).
 		WillReturnRows(expRows)
 	products, err := repo.GetProducts(context.Background(), 5, "")
@@ -239,12 +239,12 @@ func TestGetProduct_PgSuccessWithFullResults(t *testing.T) {
 	ok(t, mock.ExpectationsWereMet())
 }
 
-func TestGetProduct_PgSuccessWithFullResultsEmptyPageTwo(t *testing.T) {
+func TestGetProducts_PgSuccessWithFullResultsEmptyPageTwo(t *testing.T) {
 	db, mock, repo, err := makeAndTestPgSmallRepo()
 	defer db.Close()
 	ok(t, err)
 
-	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
 		WithArgs(5, 5).
 		WillReturnRows(newProductRows())
 	products, err := repo.GetProducts(context.Background(), 5, "5")
@@ -260,7 +260,7 @@ func TestGetProducts_PgError(t *testing.T) {
 	defer db.Close()
 	ok(t, err)
 
-	mock.ExpectQuery("SELECT .* FROM product LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
 		WithArgs(5, 5).
 		WillReturnError(errors.New("test error"))
 	_, err = repo.GetProducts(context.Background(), 5, "5")
