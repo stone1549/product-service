@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/stone1549/product-service/common"
 	"github.com/stone1549/product-service/repository"
@@ -33,7 +32,7 @@ func newProductListResponse(products []common.Product, cursor string) productLis
 
 func GetProductsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		first, err := strconv.Atoi(chi.URLParam(r, "first"))
+		first, err := strconv.Atoi(r.URL.Query().Get("first"))
 
 		if err != nil {
 			first = 20
