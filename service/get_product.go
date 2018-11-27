@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -12,14 +13,16 @@ import (
 )
 
 type productResponse struct {
-	Id               string  `json:"id"`
-	Name             string  `json:"name"`
-	DisplayImage     *string `json:"displayImage"`
-	Thumbnail        *string `json:"thumbnail"`
-	Price            *string `json:"price"`
-	Description      *string `json:"description"`
-	ShortDescription *string `json:"shortDescription"`
-	Quantity         int     `json:"quantity"`
+	Id               string     `json:"id"`
+	Name             string     `json:"name"`
+	DisplayImage     *string    `json:"displayImage"`
+	Thumbnail        *string    `json:"thumbnail"`
+	Price            *string    `json:"price"`
+	Description      *string    `json:"description"`
+	ShortDescription *string    `json:"shortDescription"`
+	Quantity         int        `json:"quantity"`
+	CreatedAt        *time.Time `json:"createdAt"`
+	UpdatedAt        *time.Time `json:"updatedAt"`
 }
 
 func (plr productResponse) Render(w http.ResponseWriter, r *http.Request) error {
@@ -43,6 +46,8 @@ func newProductResponse(product common.Product) productResponse {
 		Quantity:         product.QtyInStock,
 		ShortDescription: product.ShortDescription,
 		Thumbnail:        product.Thumbnail,
+		CreatedAt:        product.CreatedAt,
+		UpdatedAt:        product.UpdatedAt,
 	}
 }
 
