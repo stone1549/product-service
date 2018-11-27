@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/go-chi/render"
 	"github.com/stone1549/product-service/common"
@@ -41,6 +42,22 @@ func GetProductsMiddleware(next http.Handler) http.Handler {
 
 		cursor := r.URL.Query().Get("cursor")
 
+		orderBy := common.OrderBy{}
+
+		orderByStr := r.URL.Query().Get("orderBy")
+
+		if orderByStr != "" {
+			keyStrings := strings.Split(orderByStr, ",")
+
+			for _, keyStr := range keyStrings {
+				err = orderBy.Add(common.OrderByKey(keyStr))
+				if err != nil {
+					render.Render(w, r, errInvalidRequest(err))
+					return
+				}
+			}
+		}
+
 		productRepo, ok := r.Context().Value("repo").(repository.ProductRepository)
 
 		if !ok {
@@ -48,7 +65,7 @@ func GetProductsMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		productsList, err := productRepo.GetProducts(r.Context(), first, cursor)
+		productsList, err := productRepo.GetProducts(r.Context(), first, cursor, orderBy)
 
 		if err != nil {
 			render.Render(w, r, errRepository(err))

@@ -2,6 +2,7 @@ package repository_test
 
 import (
 	"context"
+	"github.com/stone1549/product-service/common"
 	"github.com/stone1549/product-service/repository"
 	"testing"
 )
@@ -31,17 +32,54 @@ func TestGetProduct_ImSuccessWithNoResult(t *testing.T) {
 
 func TestGetProducts_ImSuccessWithPartialResults(t *testing.T) {
 	repo := makeNewImRepo(t)
-	products, err := repo.GetProducts(context.Background(), 5, "18")
+	products, err := repo.GetProducts(context.Background(), 5, "18", common.OrderBy{})
 
 	ok(t, err)
 	equals(t, 2, len(products.Products))
 	equals(t, "20", products.Cursor)
 }
 
+func TestGetProducts_ImSuccessOrderByCreated(t *testing.T) {
+	repo := makeNewImRepo(t)
+
+	orderBy := common.OrderBy{}
+	orderBy.Add(common.OrderByCreatedDesc)
+	products, err := repo.GetProducts(context.Background(), 5, "", orderBy)
+
+	ok(t, err)
+	equals(t, 5, len(products.Products))
+	equals(t, "16", products.Cursor)
+}
+
+func TestGetProducts_ImSuccessOrderByCreatedAndName(t *testing.T) {
+	repo := makeNewImRepo(t)
+
+	orderBy := common.OrderBy{}
+	orderBy.Add(common.OrderByCreatedDesc)
+	orderBy.Add(common.OrderByName)
+	products, err := repo.GetProducts(context.Background(), 2, "", orderBy)
+
+	ok(t, err)
+	equals(t, 2, len(products.Products))
+	equals(t, "20", products.Cursor)
+}
+
+func TestGetProducts_ImSuccessOrderByName(t *testing.T) {
+	repo := makeNewImRepo(t)
+
+	orderBy := common.OrderBy{}
+	orderBy.Add(common.OrderByName)
+	products, err := repo.GetProducts(context.Background(), 5, "", orderBy)
+
+	ok(t, err)
+	equals(t, 5, len(products.Products))
+	equals(t, "11", products.Cursor)
+}
+
 func TestGetProduct_ImSuccessWithFullResults(t *testing.T) {
 	repo := makeNewImRepo(t)
 
-	products, err := repo.GetProducts(context.Background(), 5, "")
+	products, err := repo.GetProducts(context.Background(), 5, "", common.OrderBy{})
 
 	ok(t, err)
 	equals(t, 5, len(products.Products))
@@ -50,7 +88,7 @@ func TestGetProduct_ImSuccessWithFullResults(t *testing.T) {
 
 func TestGetProduct_ImSuccessWithFullResultsEmptyPageTwo(t *testing.T) {
 	repo := makeNewImRepo(t)
-	products, err := repo.GetProducts(context.Background(), 5, "21")
+	products, err := repo.GetProducts(context.Background(), 5, "21", common.OrderBy{})
 
 	ok(t, err)
 	equals(t, 0, len(products.Products))

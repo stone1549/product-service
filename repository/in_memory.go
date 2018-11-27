@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/blevesearch/bleve"
+	"github.com/shopspring/decimal"
 	"github.com/stone1549/product-service/common"
 	"io/ioutil"
 	"sort"
+	"time"
 )
 
 type inMemoryProductRepository struct {
@@ -15,27 +17,142 @@ type inMemoryProductRepository struct {
 	index    bleve.Index
 }
 
-type sortDefault []common.Product
-
-func (s sortDefault) Len() int {
-	return len(s)
+type orderBySort struct {
+	Products []common.Product
+	Order    common.OrderBy
 }
 
-func (s sortDefault) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
+func (obs *orderBySort) Len() int {
+	return len(obs.Products)
 }
 
-func (s sortDefault) Less(i, j int) bool {
-	if s[i].UpdatedAt.Unix() > s[j].UpdatedAt.Unix() {
-		return true
-	} else if s[i].UpdatedAt.Unix() == s[j].UpdatedAt.Unix() {
-		return s[i].CreatedAt.Unix() > s[j].CreatedAt.Unix()
+func (obs *orderBySort) Swap(i, j int) {
+	obs.Products[i], obs.Products[j] = obs.Products[j], obs.Products[i]
+}
+
+func compareTimePtr(a, b *time.Time) int {
+	if a == nil && b == nil {
+		return 0
+	} else if a == nil {
+		return 1
+	} else if b == nil {
+		return -1
+	}
+
+	if a.Unix() == b.Unix() {
+		return 0
+	} else if a.Unix() < b.Unix() {
+		return -1
 	} else {
-		return false
+		return 1
 	}
 }
 
-func (impr *inMemoryProductRepository) GetProducts(_ context.Context, first int, cursor string) (ProductList, error) {
+func compareStrPtr(a, b *string) int {
+	if a == nil && b == nil {
+		return 0
+	} else if a == nil {
+		return 1
+	} else if b == nil {
+		return -1
+	}
+
+	if *a == *b {
+		return 0
+	} else if *a < *b {
+		return -1
+	} else {
+		return 1
+	}
+}
+
+func compareDecimalPtr(a, b *decimal.Decimal) int {
+	if a == nil && b == nil {
+		return 0
+	} else if a == nil {
+		return 1
+	} else if b == nil {
+		return -1
+	}
+
+	if *a == *b {
+		return 0
+	} else if a.LessThan(*b) {
+		return -1
+	} else {
+		return 1
+	}
+}
+
+func (obs *orderBySort) Less(i, j int) bool {
+	for _, key := range obs.Order.Order() {
+		switch key {
+		case common.OrderByCreated:
+			value := compareTimePtr(obs.Products[i].CreatedAt, obs.Products[j].CreatedAt)
+			if value == 0 {
+				continue
+			} else {
+				return value < 0
+			}
+		case common.OrderByCreatedDesc:
+			value := compareTimePtr(obs.Products[i].CreatedAt, obs.Products[j].CreatedAt) * -1
+			if value == 0 {
+				continue
+			} else {
+				return value < 0
+			}
+		case common.OrderByUpdated:
+			value := compareTimePtr(obs.Products[i].UpdatedAt, obs.Products[j].UpdatedAt)
+			if value == 0 {
+				continue
+			} else {
+				return value < 0
+			}
+		case common.OrderByUpdatedDesc:
+			value := compareTimePtr(obs.Products[i].UpdatedAt, obs.Products[j].UpdatedAt) * -1
+			if value == 0 {
+				continue
+			} else {
+				return value < 0
+			}
+		case common.OrderByName:
+			value := compareStrPtr(&obs.Products[i].Name, &obs.Products[j].Name)
+			if value == 0 {
+				continue
+			} else {
+				return value < 0
+			}
+		case common.OrderByNameDesc:
+			value := compareStrPtr(&obs.Products[i].Name, &obs.Products[j].Name) * -1
+			if value == 0 {
+				continue
+			} else {
+				return value < 0
+			}
+		case common.OrderByPrice:
+			value := compareDecimalPtr(obs.Products[i].Price, obs.Products[j].Price)
+			if value == 0 {
+				continue
+			} else {
+				return value < 0
+			}
+		case common.OrderByPriceDesc:
+			value := compareDecimalPtr(obs.Products[i].Price, obs.Products[j].Price) * -1
+			if value == 0 {
+				continue
+			} else {
+				return value > 0
+			}
+		default:
+			continue
+		}
+	}
+
+	return false
+}
+
+func (impr *inMemoryProductRepository) GetProducts(_ context.Context, first int, cursor string,
+	orderBy common.OrderBy) (ProductList, error) {
 	products := make([]common.Product, 0)
 
 	newCursor := cursor
@@ -44,7 +161,12 @@ func (impr *inMemoryProductRepository) GetProducts(_ context.Context, first int,
 		reachedCursor = true
 	}
 
-	for _, product := range impr.products {
+	sortedProducts := make([]common.Product, len(impr.products))
+	copy(sortedProducts, impr.products)
+	sortByOrderBy := orderBySort{sortedProducts, orderBy}
+	sort.Sort(&sortByOrderBy)
+
+	for _, product := range sortByOrderBy.Products {
 		if len(products) == first {
 			break
 		} else if product.Id == cursor {
@@ -168,8 +290,5 @@ func loadInitInMemoryDataset(dataset string) ([]common.Product, error) {
 
 	err = json.Unmarshal(jsonBytes, &products)
 
-	if err != nil {
-		sort.Sort(sortDefault(products))
-	}
 	return products, err
 }

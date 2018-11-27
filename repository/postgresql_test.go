@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/stone1549/product-service/common"
 	"github.com/stone1549/product-service/repository"
 	"gopkg.in/DATA-DOG/go-sqlmock.v2"
 	"testing"
@@ -205,15 +206,17 @@ func TestGetProduct_PgError(t *testing.T) {
 	ok(t, mock.ExpectationsWereMet())
 }
 
+const getProductsRegexStr = "SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2"
+
 func TestGetProducts_PgSuccessWithPartialResults(t *testing.T) {
 	db, mock, repo, err := makeAndTestPgSmallRepo()
 	defer db.Close()
 	ok(t, err)
 
-	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery(getProductsRegexStr).
 		WithArgs(5, 0).
 		WillReturnRows(addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))
-	products, err := repo.GetProducts(context.Background(), 5, "")
+	products, err := repo.GetProducts(context.Background(), 5, "", common.OrderBy{})
 
 	ok(t, err)
 	equals(t, 2, len(products.Products))
@@ -228,10 +231,10 @@ func TestGetProducts_PgSuccessWithFullResults(t *testing.T) {
 
 	expRows := addExpectedProductId5Row(addExpectedProductId4Row(addExpectedProductId3Row(
 		addExpectedProductId2Row(addExpectedProductId1Row(newProductRows())))))
-	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery(getProductsRegexStr).
 		WithArgs(5, 0).
 		WillReturnRows(expRows)
-	products, err := repo.GetProducts(context.Background(), 5, "")
+	products, err := repo.GetProducts(context.Background(), 5, "", common.OrderBy{})
 
 	ok(t, err)
 	equals(t, 5, len(products.Products))
@@ -244,10 +247,10 @@ func TestGetProducts_PgSuccessWithFullResultsEmptyPageTwo(t *testing.T) {
 	defer db.Close()
 	ok(t, err)
 
-	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery(getProductsRegexStr).
 		WithArgs(5, 5).
 		WillReturnRows(newProductRows())
-	products, err := repo.GetProducts(context.Background(), 5, "5")
+	products, err := repo.GetProducts(context.Background(), 5, "5", common.OrderBy{})
 
 	ok(t, err)
 	equals(t, 0, len(products.Products))
@@ -260,10 +263,10 @@ func TestGetProducts_PgError(t *testing.T) {
 	defer db.Close()
 	ok(t, err)
 
-	mock.ExpectQuery("SELECT .* FROM product .* LIMIT \\$1 OFFSET \\$2").
+	mock.ExpectQuery(getProductsRegexStr).
 		WithArgs(5, 5).
 		WillReturnError(errors.New("test error"))
-	_, err = repo.GetProducts(context.Background(), 5, "5")
+	_, err = repo.GetProducts(context.Background(), 5, "5", common.OrderBy{})
 
 	notOk(t, err)
 	ok(t, mock.ExpectationsWereMet())

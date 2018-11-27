@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/shopspring/decimal"
 	"github.com/stone1549/product-service/common"
@@ -11,9 +12,8 @@ import (
 )
 
 const (
-	listProductsQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, 
-							created_at, updated_at FROM product ORDER BY updated_at DESC, created_at DESC LIMIT $1 OFFSET $2`
-	getProductQuery = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, 
+	listProductsQuery = "SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, created_at, updated_at FROM product ORDER BY %s LIMIT $1 OFFSET $2"
+	getProductQuery   = `SELECT id, name, description, short_description, display_image, thumbnail, price, qty_in_stock, 
 						created_at, updated_at FROM product WHERE id=$1`
 	insertProductQuery = `INSERT INTO product (id, name, description, short_description, display_image, thumbnail, 
 							price, qty_in_stock) 
@@ -74,7 +74,36 @@ func scanProductFromRows(rows *sql.Rows) (*common.Product, error) {
 	return &result, err
 }
 
-func (ppr postgresqlProductRepository) GetProducts(ctx context.Context, first int, cursor string) (ProductList, error) {
+func orderByFields(orderBy common.OrderBy) (string, error) {
+	var keys []string
+	for _, key := range orderBy.Order() {
+		switch key {
+		case common.OrderByCreated:
+			keys = append(keys, "created_at")
+		case common.OrderByCreatedDesc:
+			keys = append(keys, "created_at DESC")
+		case common.OrderByUpdated:
+			keys = append(keys, "updated_at")
+		case common.OrderByUpdatedDesc:
+			keys = append(keys, "updated_at DESC")
+		case common.OrderByName:
+			keys = append(keys, "name")
+		case common.OrderByNameDesc:
+			keys = append(keys, "name DESC")
+		case common.OrderByPrice:
+			keys = append(keys, "price")
+		case common.OrderByPriceDesc:
+			keys = append(keys, "price DESC")
+		default:
+			return "", newErrRepository(fmt.Sprintf("Unsupported order by field %s", key))
+		}
+	}
+
+	return strings.Join(keys, ", "), nil
+}
+
+func (ppr postgresqlProductRepository) GetProducts(ctx context.Context, first int, cursor string,
+	orderBy common.OrderBy) (ProductList, error) {
 	var result ProductList
 	var offset int
 	var err error
@@ -87,7 +116,13 @@ func (ppr postgresqlProductRepository) GetProducts(ctx context.Context, first in
 		}
 	}
 
-	rows, err := ppr.db.QueryContext(ctx, listProductsQuery, first, offset)
+	orderByStr, err := orderByFields(orderBy)
+
+	if err != nil {
+		return ProductList{}, err
+	}
+
+	rows, err := ppr.db.QueryContext(ctx, fmt.Sprintf(listProductsQuery, orderByStr), first, offset)
 	if err != nil {
 		return result, err
 	}
