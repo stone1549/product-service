@@ -31,6 +31,8 @@ func newProductListResponse(products []common.Product, cursor string) productLis
 	return productListResponse{results, cursor}
 }
 
+// GetProductMiddleware middleware loads a list of products from the request parameters and adds them to the request
+// context. If no products are found, a 404 is returned.
 func GetProductsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		first, err := strconv.Atoi(r.URL.Query().Get("first"))
@@ -81,6 +83,7 @@ func GetProductsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// GetProducts renders the requested products.
 func GetProducts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	products, ok := ctx.Value("products").([]common.Product)

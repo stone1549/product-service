@@ -51,6 +51,8 @@ func newProductResponse(product common.Product) productResponse {
 	}
 }
 
+// GetProductMiddleware middleware loads a product from the request parameters and adds it to the request context.
+// If no product is found, a 404 is returned.
 func GetProductMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "productId")
@@ -80,6 +82,7 @@ func GetProductMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// GetProduct renders the requested product if it was found.
 func GetProduct(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	product, ok := ctx.Value("product").(common.Product)

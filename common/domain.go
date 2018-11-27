@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Product holds information on an item for sale.
 type Product struct {
 	Id               string           `json:"id"`
 	Name             string           `json:"name"`
@@ -19,19 +20,29 @@ type Product struct {
 	UpdatedAt        *time.Time       `json:"updatedAt"`
 }
 
+// OrderByKey represents a particular field that products can be sorted by.
 type OrderByKey string
 
 const (
-	OrderByCreated     OrderByKey = "created"
+	// OrderByCreated order from oldest to newest.
+	OrderByCreated OrderByKey = "created"
+	// OrderByCreatedDesc order from newest to oldest.
 	OrderByCreatedDesc OrderByKey = "createdDesc"
-	OrderByUpdated     OrderByKey = "updated"
+	// OrderByUpdated order from least recently updated to most recently updated.
+	OrderByUpdated OrderByKey = "updated"
+	// OrderByUpdatedDesc order from most recently updated to least recently updated.
 	OrderByUpdatedDesc OrderByKey = "updatedDesc"
-	OrderByName        OrderByKey = "name"
-	OrderByNameDesc    OrderByKey = "nameDesc"
-	OrderByPrice       OrderByKey = "price"
-	OrderByPriceDesc   OrderByKey = "priceDesc"
+	// OrderByName order alphabetically by name.
+	OrderByName OrderByKey = "name"
+	// OrderByNameDesc order reverse alphabetically by name.
+	OrderByNameDesc OrderByKey = "nameDesc"
+	// OrderByPrice order from least expensive to most expensive.
+	OrderByPrice OrderByKey = "price"
+	// OrderByPriceDesc order from most expensive to least expensive.
+	OrderByPriceDesc OrderByKey = "priceDesc"
 )
 
+// Supported returns true if sorting by the given key is currently implemented.
 func (obk OrderByKey) Supported() bool {
 	switch obk {
 	case OrderByCreated:
@@ -55,6 +66,8 @@ func (obk OrderByKey) Supported() bool {
 	}
 }
 
+// GetMirrorKey returns the opposite or mirror of the receiver key, for instance alphabetically by name ascending and
+// alphabetically by name descending.
 func (obk OrderByKey) GetMirrorKey() OrderByKey {
 	switch obk {
 	case OrderByCreated:
@@ -78,6 +91,7 @@ func (obk OrderByKey) GetMirrorKey() OrderByKey {
 	}
 }
 
+// OrderBy represents of and list of keys to sort by.
 type OrderBy struct {
 	keys []OrderByKey
 }
@@ -91,6 +105,7 @@ func orderByContains(keys []OrderByKey, key OrderByKey) bool {
 	return false
 }
 
+// Add will add the given key to the underlying list of keys or returns an error if doing so is not valid.
 func (ob *OrderBy) Add(key OrderByKey) error {
 	if !key.Supported() {
 		return errors.Errorf("Attempted to add unsupported key %s", key)
@@ -108,6 +123,7 @@ func (ob *OrderBy) Add(key OrderByKey) error {
 	return nil
 }
 
+// Order retrieves an ordered slice of keys to sort by.
 func (ob *OrderBy) Order() []OrderByKey {
 	if len(ob.keys) == 0 {
 		ob.Add(OrderByUpdatedDesc)

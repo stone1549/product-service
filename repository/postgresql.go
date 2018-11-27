@@ -102,6 +102,7 @@ func orderByFields(orderBy common.OrderBy) (string, error) {
 	return strings.Join(keys, ", "), nil
 }
 
+// GetProducts retrieves a list of the first X products starting from the given cursor.
 func (ppr postgresqlProductRepository) GetProducts(ctx context.Context, first int, cursor string,
 	orderBy common.OrderBy) (ProductList, error) {
 	var result ProductList
@@ -146,6 +147,7 @@ func (ppr postgresqlProductRepository) GetProducts(ctx context.Context, first in
 	return result, nil
 }
 
+// GetProduct retrieves a product from the given id.
 func (ppr postgresqlProductRepository) GetProduct(ctx context.Context, id string) (*common.Product, error) {
 	row := ppr.db.QueryRowContext(ctx, getProductQuery, id)
 
@@ -156,6 +158,7 @@ func (ppr postgresqlProductRepository) GetProduct(ctx context.Context, id string
 	return scanProductFromRow(row)
 }
 
+// SearchProducts retrieves the first X matches starting from the given cursor.
 func (ppr *postgresqlProductRepository) SearchProducts(ctx context.Context, searchTxt string, first int,
 	cursor string) (ProductList, error) {
 	var result ProductList
@@ -220,6 +223,7 @@ func loadInitPostgresqlData(db *sql.DB, dataset string) error {
 	return txn.Commit()
 }
 
+// MakePostgresqlProductRespository constructs a PostgreSQL backed ProductRepository from the given params.
 func MakePostgresqlProductRespository(config common.Configuration, db *sql.DB) (ProductRepository, error) {
 	var err error
 	if config.GetInitDataSet() != "" {

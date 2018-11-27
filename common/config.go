@@ -18,12 +18,16 @@ const (
 	initDatasetKey    string = "PRODUCT_SERVICE_INIT_DATASET"
 )
 
+// LifeCycle represents a particular application life cycle.
 type LifeCycle int
 
 const (
-	DevLifeCycle     LifeCycle = 0
+	// DevLifeCycle represents the development environment.
+	DevLifeCycle LifeCycle = 0
+	// PreProdLifeCycle represents the pre production environment.
 	PreProdLifeCycle LifeCycle = iota
-	ProdLifeCycle    LifeCycle = iota
+	// ProdLifeCycle represents the production environment.
+	ProdLifeCycle LifeCycle = iota
 )
 
 func (lc LifeCycle) String() string {
@@ -39,10 +43,13 @@ func (lc LifeCycle) String() string {
 	}
 }
 
+// ProductRepositoryType represents a type of ProductRepository
 type ProductRepositoryType int
 
 const (
-	InMemoryRepo   ProductRepositoryType = 0
+	// InMemoryRepo represents a ProductRepository that is stored entirely in memory.
+	InMemoryRepo ProductRepositoryType = 0
+	// PostgreSqlRepo represents a ProductRepository that utilizes a PostgreSQL database.
 	PostgreSqlRepo ProductRepositoryType = iota
 )
 
@@ -57,17 +64,21 @@ func (prt ProductRepositoryType) String() string {
 	}
 }
 
+// Configuration provides methods for retrieving aspects of the applications configuration.
 type Configuration interface {
-	// Required config
+	// GetLifeCycle retrieves the configured life cycle.
 	GetLifeCycle() LifeCycle
+	// GetRepoType retrieves the configured repo type.
 	GetRepoType() ProductRepositoryType
+	// GetTimeout retrieves the configured request timeout.
 	GetTimeout() time.Duration
+	// GetPort retrieves the configured port.
 	GetPort() int
 
-	// Optional config
+	// GetInitDataSet retrieves the path to an initial dataset to load on app launch, mostly for testing and dev use.
 	GetInitDataSet() string
 
-	// PostgreSqlRepo config
+	// GetPgUrl retrieves the configured url string for connecting to PostgreSQL.
 	GetPgUrl() string
 }
 
@@ -104,6 +115,7 @@ func (conf *configuration) GetInitDataSet() string {
 	return conf.initDataset
 }
 
+// GetConfiguration constucts a Configuration based on environment variables.
 func GetConfiguration() (Configuration, error) {
 	var err error
 	config := configuration{}

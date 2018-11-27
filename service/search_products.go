@@ -12,6 +12,8 @@ import (
 	"strconv"
 )
 
+// SearchProductsMiddleware middleware loads a list of products from the request parameters and adds them to the request
+// context. If no products are found, a 404 is returned.
 func SearchProductsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		first, err := strconv.Atoi(chi.URLParam(r, "first"))
@@ -48,6 +50,7 @@ func SearchProductsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// SearchProducts renders the matching products.
 func SearchProducts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	products, ok := ctx.Value("products").([]common.Product)

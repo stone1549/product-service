@@ -151,6 +151,7 @@ func (obs *orderBySort) Less(i, j int) bool {
 	return false
 }
 
+// GetProducts retrieves a list of the first X products starting from the given cursor.
 func (impr *inMemoryProductRepository) GetProducts(_ context.Context, first int, cursor string,
 	orderBy common.OrderBy) (ProductList, error) {
 	products := make([]common.Product, 0)
@@ -191,10 +192,12 @@ func findProductById(products []common.Product, id string) (*common.Product, err
 	return nil, nil
 }
 
+// GetProduct retrieves a product from the given id.
 func (impr *inMemoryProductRepository) GetProduct(_ context.Context, id string) (*common.Product, error) {
 	return findProductById(impr.products, id)
 }
 
+// SearchProducts retrieves the first X matches starting from the given cursor.
 func (impr *inMemoryProductRepository) SearchProducts(ctx context.Context, searchTxt string, first int,
 	cursor string) (ProductList, error) {
 	query := bleve.NewMatchQuery(searchTxt)
@@ -231,6 +234,7 @@ func (impr *inMemoryProductRepository) SearchProducts(ctx context.Context, searc
 	return ProductList{products, newCursor}, nil
 }
 
+// MakeInMemoryRepository constructs an in memory backed ProductRepository from the given configuration.
 func MakeInMemoryRepository(config common.Configuration) (ProductRepository, error) {
 	var products []common.Product
 	var err error
