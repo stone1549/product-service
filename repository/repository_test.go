@@ -113,16 +113,19 @@ func (c configuration) GetPgUrl() string {
 	}
 }
 
+// TestNewProductRepository_ImSuccessEmpty ensures an empty in memory repo can be constructed
 func TestNewProductRepository_ImSuccessEmpty(t *testing.T) {
 	_, err := repository.NewProductRepository(inMemoryEmpty)
 	ok(t, err)
 }
 
+// TestNewProductRepository_ImSuccessSmall ensures a prepopulated memory repo can be constructed
 func TestNewProductRepository_ImSuccessSmall(t *testing.T) {
 	_, err := repository.NewProductRepository(inMemorySmall)
 	ok(t, err)
 }
 
+// TestNewProductRepository_PgSuccessEmpty ensures an empty PG repo can be constructed
 func TestNewProductRepository_PgSuccessEmpty(t *testing.T) {
 	_, err := repository.NewProductRepository(pgEmpty)
 	ok(t, err)

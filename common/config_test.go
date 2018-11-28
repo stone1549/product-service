@@ -33,48 +33,60 @@ func setEnv(lifeCycle, repoType, timeoutSeconds, port, pgUrl, pgInitDataset stri
 	os.Setenv(pgInitDatasetKey, pgInitDataset)
 }
 
+// TestGetConfiguration_Defaults ensures that a default configuration is returned if no configuration is provided in
+// the environment.
 func TestGetConfiguration_Defaults(t *testing.T) {
 	clearEnv()
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
+// TestGetConfiguration_Defaults ensures that a default configuration is returned if no configuration is provided in
+// the environment.
 func TestGetConfiguration_ImSuccess(t *testing.T) {
 	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
+// TestGetConfiguration_ImSuccessSmallDataset ensures that a configuration is returned when specifying an in memory
+// repo with an initial dataset.
 func TestGetConfiguration_ImSuccessSmallDataset(t *testing.T) {
 	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "../data/small_set.json")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
+// TestGetConfiguration_ImSuccessNoneDataset ensures that a configuration is returned when specifying an in memory
+// repo without an initial dataset.
 func TestGetConfiguration_ImSuccessNoneDataset(t *testing.T) {
 	setEnv("DEV", "IN_MEMORY", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
 	ok(t, err)
 }
 
+// TestGetConfiguration_FailRepo ensures that an error is returned when specifying an invalid repo type.
 func TestGetConfiguration_FailRepo(t *testing.T) {
 	setEnv("PROD", "", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
 	notOk(t, err)
 }
 
+// TestGetConfiguration_FailTimeout ensures that an error is returned when specifying an invalid timeout.
 func TestGetConfiguration_FailTimeout(t *testing.T) {
 	setEnv("PROD", "IN_MEMORY", "", "3333", "", "")
 	_, err := common.GetConfiguration()
 	notOk(t, err)
 }
 
+// TestGetConfiguration_FailPort ensures that an error is returned when specifying an invalid port.
 func TestGetConfiguration_FailPort(t *testing.T) {
 	setEnv("PROD", "IN_MEMORY", "60", "", "", "")
 	_, err := common.GetConfiguration()
 	notOk(t, err)
 }
 
+// TestGetConfiguration_PgSuccess ensures that a configuration is returned when specifying a PostgreSQL repo type.
 func TestGetConfiguration_PgSuccess(t *testing.T) {
 	setEnv("PROD", "POSTGRESQL", "60", "3333",
 		"postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable", "")
@@ -82,6 +94,8 @@ func TestGetConfiguration_PgSuccess(t *testing.T) {
 	ok(t, err)
 }
 
+// TestGetConfiguration_PgFailPgUrl ensures that an error is returned when specifying a PostgreSQL repo type without a
+// connection url.
 func TestGetConfiguration_PgFailPgUrl(t *testing.T) {
 	setEnv("PROD", "POSTGRESQL", "60", "3333", "", "")
 	_, err := common.GetConfiguration()
