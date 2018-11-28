@@ -50,7 +50,6 @@ func main() {
 	r.Use(middleware.Timeout(config.GetTimeout()))
 
 	r.Route("/products", func(r chi.Router) {
-
 		r.With(service.SearchProductsMiddleware).Get("/search", service.SearchProducts)
 		r.With(service.GetProductsMiddleware).Get("/", service.GetProducts)
 		r.Route("/{productId}", func(r chi.Router) {
